@@ -1,0 +1,15 @@
+html{
+    font-family: "Roboto";
+    font-size: 1.3em;
+}
+a,p,span,h1,h2,h3,h4,h5,button,select,option{
+    font-family: "Roboto";
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
+select,option,select::after,select::before{
+    border: none;
+    outline: none;
+}

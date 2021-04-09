@@ -1,0 +1,79 @@
+
+.main-grid-container{
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+.grid{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    background-color: #ddd;
+    justify-content: center;
+    align-items: center;
+   /* gap:1px;*/
+}
+.row{
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: #ddd;
+   /* gap:1px; */
+}
+.cell{
+    border-left: 1px solid #b2c4df;
+    border-top: 1px solid #b2c4df;
+    background-color: white;
+    transition: background-color 0.15s linear, transform 0.15s ease-out;
+}
+/* Cell Sizes */
+.row.big .cell{
+    width: 20px;
+    height: 20px;
+}
+.row.small .cell{
+    width: 15px;
+    height: 15px;
+}
+
+/* Cell States */
+.cell.start{
+    border-color: var(--color-blue);
+    background-color: var(--color-blue);
+}
+.cell.end{
+    border-color: var(--color-red);
+    background-color: var(--color-red);
+}
+.cell.null{
+    border-color: #b2c4df;
+    background-color: var(--color-white);
+}
+.cell.open{
+    border-color: var(--color-lightgreen);
+    background-color: var(--color-lightgreen);
+}
+.cell.closed{
+    border-color: var(--color-darkgreen);
+    background-color: var(--color-darkgreen);
+}
+.cell.path{
+    border-color: var(--color-orange);
+    background-color: var(--color-orange);
+}
+.cell.wall{
+    border-color: var(--color-dark);
+    background-color: var(--color-dark);
+}
+.cell.animate{
+    animation-name: cell-anim;
+    animation-duration: 0.4s;
+}
+
+@keyframes cell-anim {
+    0%   {transform: scale(1.0);}
+    50%  {transform: scale(1.25)}
+    100% {transform: scale(1.0)}
+  }
+  

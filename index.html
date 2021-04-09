@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    <title>Pathfinding visualizer</title>
+    <link rel="stylesheet" href="typo.css">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="grid.css">
+    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+    <link rel="icon" href="neural.svg">
+</head>
+<body>
+    <div class="page">
+        <header>
+            <nav class="navbar">
+                <div class="navbar-item">
+                    <div class="custom-select">
+                        <select id="algo-select">
+                            <option value="AStar">A* algoritmus</option>
+                            <option value="Dijkstra">Dijkstrův algoritmus</option>
+                            <option value="BFS">Prohledávání do šířky (BFS)</option>
+                            <option value="DFS">Prohledávání do hloubky (DFS)</option>
+                            <option value="Greedy">Hladový algoritmus (Greedy)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="navbar-item">
+                    <div class="custom-select">
+                        <select id="maze-algo-select">
+                            <option value="">Paterny a bludiště</option>
+                            <option value="DFS">Náhodné generování do hloubky</option>
+                            <option value="Prim">Primův algorimus</option>
+                            <option value="Random">Náhodné bludiště</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="navbar-item">
+                    <button class="general-button start-button" onclick="Run()">Začít vizualizaci</button>
+                </div>
+                <div class="navbar-item">
+                    <span class="range-caption">Rychlost</span>
+                    <input type="range" class="range-speed" id="range-speed" min="0" max="200" value="200">
+                </div>
+                <div class="navbar-item">
+                    <button class="general-button options-button" onclick="ResetPath();">Reset trasy</button>
+                </div>
+
+                <div class="navbar-item">
+                    <button class="general-button options-button" onclick="ClearWalls();">Smazat zdi</button>
+                </div>
+                <div class="navbar-item">
+                    <button class="general-button options-button" onclick="ClearGrid();">Vyčistit desku</button>
+                </div>
+            </nav>
+        </header>
+        <div class="main-grid-container">
+            <div class="grid" id="grid">
+            
+            </div>
+        </div>
+    </div>
+    <script src="main.js" async></script>
+    <script src="select.js" async></script>
+</body>
+</html>
