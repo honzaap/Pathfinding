@@ -83,14 +83,16 @@ class Cell
 let grid = [];
 
 // Grid element
+let body = document.getElementsByTagName("body")[0];
 let grid_HTML = document.getElementById("grid");
 let navbar_HTML = document.getElementById("navbar");
 let speed_range = document.getElementById("range-speed");
 let algo_select = document.getElementById("algo-select");
 let maze_algo_select = document.getElementById("maze-algo-select");
 
-const window_y = grid_HTML.scrollHeight;
-const window_x = grid_HTML.scrollWidth;
+const window_y = body.scrollHeight - navbar_HTML.scrollHeight;
+const window_x = body.scrollWidth;
+
 let horizontal_cells;
 let vertical_cells;
 let tile_size ;

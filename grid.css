@@ -1,18 +1,21 @@
 
 .main-grid-container{
-    width: 100%;
     height: 100%;
-    flex-grow: 1;
-    flex-shrink: 1;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+.grid-container{
+    display: inline-block;
 }
 .grid{
-    width: 100%;
-    height: 100%;
     display: flex;
     flex-flow: column nowrap;
     background-color: #ddd;
     justify-content: center;
     align-items: center;
+    border: 2px solid var(--color-darkgreen);
    /* gap:1px;*/
 }
 .row{

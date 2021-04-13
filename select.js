@@ -3,7 +3,7 @@ var x, i, j, l, ll, selElmnt, a, b, c;
 x = document.getElementsByClassName("custom-select");
 for(let c of x)
 {
-    c.style.width = (c.children[0].scrollWidth + 20).toString() + "px";
+    c.style.width = (c.children[0].scrollWidth + 35).toString() + "px";
     c.children[0].style.display = "none";
 }
 l = x.length;

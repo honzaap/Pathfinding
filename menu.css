@@ -1,0 +1,67 @@
+.side-menu{
+    position: absolute;
+    display: flex;
+    top: 30%;
+    left: 0;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    background-color: var(--color-white);
+
+    transform: translateX(-95%);
+    transition: transform 0.2s ease-out;
+}
+.menu-content{
+    flex-basis: 94%;
+    width: 600px;
+    border-top: 2px solid var(--color-darkgreen);
+    border-bottom: 2px solid var(--color-darkgreen);
+}
+.menu-toggle-container{
+    flex-basis: 6%;
+}
+.menu-toggle-container span{
+    background-color: var(--color-lightgreen);
+    color: var(--color-white);
+    height: 100%;
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+    transition: background-color 0.1s linear, transform 0.1s linear;
+}
+.menu-toggle-container.closed span:hover{
+    background-color: var(--color-darkgreen);
+    transform: translateX(10%);
+    cursor: pointer;
+}
+.menu-toggle-container.open span:hover{
+    background-color: var(--color-darkgreen);
+    transform: translateX(-10%);
+    cursor: pointer;
+}
+
+.menu-content-section{
+    font-size: 0.8em;
+    margin: 0.3em 0 0 0.2em;
+    padding-right: 0.25em;
+}
+.menu-content-section h3{
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase
+}
+.menu-content-section p{
+    margin-left: 1em;
+}
+.menu-content-section.pad p{
+    margin-bottom: 0.2em;
+}
+.menu-content-section .mark{
+    color: var(--color-blue)
+}
+.meaning-block{
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+}

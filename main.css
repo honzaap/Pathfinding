@@ -16,6 +16,19 @@
     --color-orange: #E34E39 ;
     --color-dark: #202825;
 }
+.text-blue{ color: var(--color-blue);}
+.text-red{ color: var(--color-red);}
+.text-orange{ color: var(--color-orange);}
+.text-lightgreen{ color: var(--color-lightgreen);}
+.text-darkgreen{ color: var(--color-darkgreen);}
+.text-dark{ color: var(--color-dark);}
+.blue{ background-color: var(--color-blue);}
+.red{ background-color: var(--color-red);}
+.orange{ background-color: var(--color-orange);}
+.lightgreen{ background-color: var(--color-lightgreen);}
+.darkgreen{ background-color: var(--color-darkgreen);}
+.dark{ background-color: var(--color-dark);}
+
 body{
     height: 100vh;
     margin: 0 ;
@@ -37,27 +50,20 @@ body{
     justify-content: flex-start;
     align-items: stretch;
     font-size: 0.8em;
-    line-height: 1.75em;
 }
-.general-select{
-    font-size: 1em;
-    padding: 0.2em 0.5em;
-    background-color: transparent;
-    color: var(--color-white);
-    transition: background-color 0.3s linear;
-    height: 100%;
+.navbar-item{
+    text-align: center;
+    height: 3.5em;
 }
-.general-select option{
+.navbar-item-caption{
+    height: 1.5em;
+    text-align: center;
     background-color: var(--color-darkgreen);
-    min-height: 1.7em;
-}
-.general-select:hover{
     color: var(--color-white);
-    background-color: var(--color-darkgreen);
 }
 .general-button{
     font-size: 1em;
-    padding: 0.2em 0.5em;
+    padding: 0.2em 1em;
     height: 100%;
     color: var(--color-white);
     background-color: transparent;
@@ -81,7 +87,9 @@ body{
     background-color: var(--color-blue);
 }
 
-.range-speed{
+.speed-container{
+    margin-top: 0.2em;
+    padding: 0.2em 0.5em;
 }
 
 .range-caption{
@@ -126,7 +134,7 @@ body{
 
 .select-items div,.select-selected {
     color: #ffffff;
-    padding: 0.4em 0 0.4em 0.3em;
+    padding: 0.5em 0 0.5em 0.3em;
     border: none;
     cursor: pointer;
 }
@@ -138,6 +146,7 @@ body{
     left: 0;
     right: 0;
     z-index: 99;
+    text-align:left;
 }
 .select-items div{
     background-color: var(--color-lightgreen);
@@ -156,5 +165,50 @@ body{
     background-color: transparent;
     border: none;
     height: 100%;
-    padding: 0.8em 0 0.8em 0.3em;
+    padding: 1em 1em 1em 0.3em;
+}
+
+.slidecontainer {
+    width: 100%; 
+}
+.slider {
+    -webkit-appearance: none;  
+    overflow: hidden;
+    appearance: none;
+    width: 100%; 
+    height: 1em; 
+    background: var(--color-white); 
+    outline: none; 
+    border-radius: 5px;
+    border: 1px solid var(--color-dark);
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 1em; 
+    height: 1em; 
+    background: var(--color-red); 
+    cursor: pointer;
+    box-shadow: -80px 0 0 80px var(--color-blue);
+}
+.slider::-moz-range-thumb {
+    width: 1em;
+    height: 1em;
+    background: var(--color-red); 
+    cursor: pointer;
+}
+/** FF*/
+input[type="range"]::-moz-range-progress {
+  background-color: var(--color-blue); 
+}
+input[type="range"]::-moz-range-track {  
+  background-color: var(--color-white);
+}
+/* IE*/
+input[type="range"]::-ms-fill-lower {
+  background-color: var(--color-blue); 
+}
+input[type="range"]::-ms-fill-upper {  
+  background-color:  var(--color-white);
 }
