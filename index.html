@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
-    <title>Vizualizace algoritmů hledajících cestu</title>
+    <title>Pathfinding Visualizer</title>
     <link rel="stylesheet" href="typo.css">
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="grid.css">
-    <link rel="stylesheet" href="menu.css">
     <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
     <link rel="icon" href="neural.svg">
 </head>
@@ -21,41 +20,41 @@
                 <div class="navbar-item">
                     <div class="custom-select">
                         <select id="algo-select">
-                            <option value="AStar">A* algoritmus</option>
-                            <option value="Dijkstra">Dijkstrův algoritmus</option>
-                            <option value="BFS">Prohledávání do šířky (BFS)</option>
-                            <option value="DFS">Prohledávání do hloubky (DFS)</option>
-                            <option value="Greedy">Hladový algoritmus (Greedy)</option>
+                            <option value="AStar">A* Algorithm</option>
+                            <option value="Dijkstra">Dijkstra's Algorithm</option>
+                            <option value="BFS">Breadth First Search</option>
+                            <option value="DFS">Depth First Search</option>
+                            <option value="Greedy">Greedy Algorithm</option>
                         </select>
                     </div>
                 </div>
                 <div class="navbar-item">
                     <div class="custom-select">
                         <select id="maze-algo-select">
-                            <option value="DFS">Náhodné generování do hloubky</option>
-                            <option value="Prim">Primův algorimus</option>
-                            <option value="Random">Náhodné bludiště</option>
+                            <option value="DFS">Random DFS Maze</option>
+                            <option value="Prim">Prim's Algorithm</option>
+                            <option value="Random">Random Maze</option>
                         </select>
                     </div>
                 </div>
                 <div class="navbar-item">
-                    <button class="general-button start-button" onclick="Run()">Začít vizualizaci</button>
+                    <button class="general-button start-button" onclick="Run()">Visualize</button>
                 </div>
                 <div class="navbar-item">
                     <div class="speed-container slidecontainer">
-                        <span class="range-caption">Rychlost</span>
+                        <span class="range-caption">Speed</span>
                         <input type="range" class="slider" id="range-speed" min="0" max="200" value="200">
                     </div>
                 </div>
                 <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ResetPath();">Reset trasy</button>
+                    <button class="general-button options-button" onclick="ResetPath();">Reset Path</button>
                 </div>
 
                 <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ClearWalls();">Smazat zdi</button>
+                    <button class="general-button options-button" onclick="ClearWalls();">Remove Walls</button>
                 </div>
                 <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ClearGrid();">Vyčistit desku</button>
+                    <button class="general-button options-button" onclick="ClearGrid();">Clear Board</button>
                 </div>
             </nav>
         </header>
@@ -67,42 +66,7 @@
             </div>
         </div>
     </div>
-    <div class="side-menu" id="side-menu">
-        <div class="menu-content">
-            <div class="menu-content-section pad">
-                <h3>Ovládání</h3>
-                <p>Vyberte algoritmus pro hledání cesty <span class="mark">v první nabídce</span>, poté klikněte na tlačítko <span class="mark">Začít vizualizaci</span>. Poté už jen sledujte &#128521;</p>
-                <p>Pokud nechcete vytvářet zdi manuálně, můžete využít některé z algoritmů <span class="mark">v druhé nabídce</span>, které vygenerují náhodné bludiště podle daného algoritmu.</p>
-            </div>
-            <div class="menu-content-section">
-                <h3>Význam barev</h3>
-                <p class="text-blue"><span class="meaning-block blue"></span> - Počáteční bod.</p>
-                <p class="text-red"><span class="meaning-block red"></span> - Cílový bod.</p>
-                <p class="text-orange"><span class="meaning-block orange"></span> - Cesta.</p>
-                <p class="text-dark"><span class="meaning-block dark"></span> - Zeď.</p>
-                <p class="text-darkgreen"><span class="meaning-block darkgreen"></span> - Již prozkoumaný bod.</p>
-                <p class="text-lightgreen"><span class="meaning-block lightgreen"></span> - Další na prozkoumání.</p>
-            </div>
-            <div class="menu-content-section pad">
-                <h3>Ostatní</h3>
-                <p>Změna rychlosti algoritmu je možná přes slider s nadpisem <span class="mark">Rychlost</span>.</p>
-                <p>Po dokončení vizualizace je možné zobrazenou trasu resetovat přes tlačítko <span class="mark">Reset trasy</span>.</p>
-                <p>Pro smazání všech zdí lze použít tlačítko <span class="mark">Smazat zdi</span>.</p>
-                <p>Tlačítko <span class="mark">Vyčistit desku</span> vrátí vše na původní pozici.</p>
-            </div>
-        </div>
-        <div class="menu-toggle-container closed">
-            <span class="menu-open">
-                <i class="fas fa-caret-right"></i>
-            </span>
-            <span class="menu-closed" style="display: none;">
-                <i class="fas fa-caret-left"></i>
-            </span>
-
-        </div>
-    </div>
     <script src="main.js" async></script>
     <script src="select.js" async></script>
-    <script src="menu.js" async></script>
 </body>
 </html>

@@ -6,15 +6,15 @@
     text-decoration: none;
     box-sizing: border-box;
 }
+/* colors and their names don't match but I'm lazy to change it */
 :root{
-    --color-blue: #075d85;
+    --color-blue: #3FA34D;
     --color-lightblue: #0a7ea1;
-    --color-red: #D4273E;
-    --color-white: #FFF;
-    --color-lightgreen: #50d1b5;
-    --color-darkgreen: #118b85;
-    --color-orange: #E34E39 ;
-    --color-dark: #202825;
+    --color-red: #207394;
+    --color-lightgreen: #7678ED;
+    --color-darkgreen: #3D348B;
+    --color-orange: #F35B04 ;
+    --color-dark: #264653;
 }
 .text-blue{ color: var(--color-blue);}
 .text-red{ color: var(--color-red);}
@@ -44,44 +44,41 @@ body{
 }
 .navbar{
     width: 100%;
-    background-color: var(--color-lightgreen);
     display: flex;
     flex-flow: row wrap;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: stretch;
     font-size: 0.8em;
 }
 .navbar-item{
     text-align: center;
     height: 3.5em;
+    display: flex;
+    align-items: center;
 }
 .navbar-item-caption{
     height: 1.5em;
     text-align: center;
     background-color: var(--color-darkgreen);
-    color: var(--color-white);
 }
 .general-button{
     font-size: 1em;
-    padding: 0.2em 1em;
-    height: 100%;
-    color: var(--color-white);
+    padding: 0.5em 1em;
     background-color: transparent;
     transition: background-color 0.3s linear, transform 0.3s ease-out;
 }
 .general-button:hover{
     cursor: pointer;
-    color: white;
 }
 .general-button:active{
     transform: scale(1.1);
 }
 .options-button:hover{
-    background-color: var(--color-darkgreen);
+    color: var(--color-darkgreen);
 }
 .start-button{
     background-color: var(--color-lightblue);
-    color: var(--color-white);
+    color: #fff;
 }
 .start-button:hover{
     background-color: var(--color-blue);
@@ -96,21 +93,15 @@ body{
     font-size: 1em;
     display: block;
     text-align: center;
-    color: var(--color-white);
 }
-
-
 
 .custom-select {
     position: relative;
     font-size: 1em;
     background-color: transparent;
-    color: var(--color-white);
-    transition: background-color 0.3s linear;
     height: 100%;
 }
 .custom-select:hover{
-    background-color: var(--color-darkgreen);
 }
 .custom-select select {
     font-size: inherit;
@@ -133,7 +124,6 @@ body{
 }
 
 .select-items div,.select-selected {
-    color: #ffffff;
     padding: 0.5em 0 0.5em 0.3em;
     border: none;
     cursor: pointer;
@@ -177,7 +167,6 @@ body{
     appearance: none;
     width: 100%; 
     height: 1em; 
-    background: var(--color-white); 
     outline: none; 
     border-radius: 5px;
     border: 1px solid var(--color-dark);
@@ -188,14 +177,14 @@ body{
     appearance: none;
     width: 1em; 
     height: 1em; 
-    background: var(--color-red); 
     cursor: pointer;
-    box-shadow: -80px 0 0 80px var(--color-blue);
+    background: var(--color-lightblue);
+    box-shadow: -80px 0 0 80px var(--color-dark);
 }
 .slider::-moz-range-thumb {
     width: 1em;
     height: 1em;
-    background: var(--color-red); 
+    background: #000; 
     cursor: pointer;
 }
 /** FF*/
@@ -203,12 +192,12 @@ input[type="range"]::-moz-range-progress {
   background-color: var(--color-blue); 
 }
 input[type="range"]::-moz-range-track {  
-  background-color: var(--color-white);
+  background-color: #fff;
 }
 /* IE*/
 input[type="range"]::-ms-fill-lower {
   background-color: var(--color-blue); 
 }
 input[type="range"]::-ms-fill-upper {  
-  background-color:  var(--color-white);
+  background-color:  #fff;
 }

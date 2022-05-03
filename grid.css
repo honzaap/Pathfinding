@@ -12,32 +12,29 @@
 .grid{
     display: flex;
     flex-flow: column nowrap;
-    background-color: #ddd;
     justify-content: center;
     align-items: center;
+    background: #ddd;
     border: 2px solid var(--color-darkgreen);
-   /* gap:1px;*/
+    overflow: hidden;
 }
 .row{
     display: flex;
     flex-flow: row nowrap;
-    background-color: #ddd;
-   /* gap:1px; */
 }
 .cell{
-    border-left: 1px solid #b2c4df;
-    border-top: 1px solid #b2c4df;
+    border: 1px solid #b2c4df;
     background-color: white;
     transition: background-color 0.15s linear, transform 0.15s ease-out;
 }
 /* Cell Sizes */
 .row.big .cell{
-    width: 20px;
-    height: 20px;
+    width: 25px;
+    height: 25px;
 }
 .row.small .cell{
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
 }
 
 /* Cell States */
@@ -51,7 +48,7 @@
 }
 .cell.null{
     border-color: #b2c4df;
-    background-color: var(--color-white);
+    background-color: #fff;
 }
 .cell.open{
     border-color: var(--color-lightgreen);

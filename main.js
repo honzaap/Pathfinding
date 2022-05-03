@@ -12,11 +12,10 @@ class Cell
     update_neighbours(grid, diagonal=true)
     {
         this.neighbours = []
-
-        let space_top = this.Y > 0;
-        let space_down = this.Y < vertical_cells - 1;
-        let space_left = this.X > 0;
-        let space_right = this.X < horizontal_cells - 1;
+        let space_top = this.Y > 0 && grid[this.Y-1][this.X];
+        let space_down = this.Y < vertical_cells - 1 && grid[this.Y+1][this.X];
+        let space_left = this.X > 0 && grid[this.Y][this.X-1];
+        let space_right = this.X < horizontal_cells - 1 && grid[this.Y][this.X+1];
 
         let top = space_top && !grid[this.Y-1][this.X].is_state("wall");
         let down = space_down && !grid[this.Y+1][this.X].is_state("wall");
@@ -36,7 +35,6 @@ class Cell
         if(right) this.neighbours.push(grid[this.Y][this.X+1]);// RIGHT 
 
         if(left) this.neighbours.push(grid[this.Y][this.X-1]);// LEFT
-
 
         if(diagonal)
         {
@@ -104,19 +102,19 @@ let is_running = false;
 
 if(window_x < 768){
     tile_size = "small";
-    horizontal_cells = Math.floor(window_x /15);
-    vertical_cells = Math.floor(window_y / 15);
-
-    horizontal_cells = Math.floor( (window_x - horizontal_cells) /15);
-    vertical_cells = Math.floor( (window_y - vertical_cells) / 15);
-}
-else{
-    tile_size = "big"
     horizontal_cells = Math.floor(window_x /20);
     vertical_cells = Math.floor(window_y / 20);
 
     horizontal_cells = Math.floor( (window_x - horizontal_cells) /20);
     vertical_cells = Math.floor( (window_y - vertical_cells) / 20);
+}
+else{
+    tile_size = "big"
+    horizontal_cells = Math.floor(window_x /25);
+    vertical_cells = Math.floor(window_y / 25);
+
+    horizontal_cells = Math.floor( (window_x - horizontal_cells) /25);
+    vertical_cells = Math.floor( (window_y - vertical_cells) / 25);
 }
 
 // Start and End nodes
@@ -132,7 +130,7 @@ for(var i = 0; i < vertical_cells; i++)
     let row = [];
 
     var row_HTML = document.createElement("div");
-    row_HTML.classList = "row " + tile_size
+    row_HTML.classList = "row " + tile_size;
     for(var j = 0; j < horizontal_cells; j++)
     {
         let cell = new Cell(j,i);
