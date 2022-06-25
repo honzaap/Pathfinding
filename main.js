@@ -5,7 +5,8 @@ class Cell
     make_state(state){this.State = state;}
     draw(grid){ 
         grid.children[this.Y].children[this.X].classList.remove("animate")
-        grid.children[this.Y].children[this.X].classList = "cell " + this.State;
+        grid.children[this.Y].children[this.X].classList = "cell " + this.State + ` x${this.X}-y${this.Y}`;
+        grid.children[this.Y].children[this.X].style.backgroundPosition = `${this.X * horizontal_cells * 0}px ${this.Y * vertical_cells / 4}px`;
         if(this.State != "null") grid.children[this.Y].children[this.X].classList.add("animate"); 
         
     }
@@ -17,36 +18,29 @@ class Cell
         let space_left = this.X > 0 && grid[this.Y][this.X-1];
         let space_right = this.X < horizontal_cells - 1 && grid[this.Y][this.X+1];
 
-        let top = space_top && !grid[this.Y-1][this.X].is_state("wall");
-        let down = space_down && !grid[this.Y+1][this.X].is_state("wall");
-        let left = space_left && !grid[this.Y][this.X-1].is_state("wall");
-        let right = space_right && !grid[this.Y][this.X+1].is_state("wall");
+        let shiftXR = this.Y % 2 === 0 ? 0 : 1; 
+        let shiftXL = this.Y % 2 === 0 ? 1 : 0; 
+        
+        let left = space_left && !grid[this.Y][this.X - 1].is_state("wall");
+        let right = space_right && !grid[this.Y][this.X + 1].is_state("wall");
 
-        let top_right = space_top && space_right && top && right && !grid[this.Y-1][this.X+1].is_state("wall");
-        let down_right = space_down && space_right && down && right && !grid[this.Y+1][this.X+1].is_state("wall");
-        let top_left = space_top && space_left && top && left &&!grid[this.Y-1][this.X-1].is_state("wall");
-        let down_left = space_down && space_left && down && left &&!grid[this.Y+1][this.X-1].is_state("wall");
+        let top_right =     space_top  && grid[this.Y-1][this.X + 1 - shiftXR] && !grid[this.Y-1][this.X + 1 - shiftXR].is_state("wall");
+		let top_left =  	space_top  && grid[this.Y-1][this.X - 1 + shiftXL] && !grid[this.Y-1][this.X - 1 + shiftXL].is_state("wall");
+        let down_right =    space_down && grid[this.Y+1][this.X + 1 - shiftXR] && !grid[this.Y+1][this.X + 1 - shiftXR].is_state("wall");
+        let down_left =     space_down && grid[this.Y+1][this.X - 1 + shiftXL] && !grid[this.Y+1][this.X - 1 + shiftXL].is_state("wall");
 
-        // HORIZONTAL/VERTICAL
-        if(top) this.neighbours.push(grid[this.Y-1][this.X]);// UP
 
-        if(down) this.neighbours.push(grid[this.Y+1][this.X]);// DOWN
+        if(top_right) this.neighbours.push(grid[this.Y-1][this.X + 1 - shiftXR]);
 
-        if(right) this.neighbours.push(grid[this.Y][this.X+1]);// RIGHT 
+        if(top_left) this.neighbours.push(grid[this.Y-1][this.X - 1 + shiftXL]);
 
-        if(left) this.neighbours.push(grid[this.Y][this.X-1]);// LEFT
+        if(down_right) this.neighbours.push(grid[this.Y+1][this.X + 1 - shiftXR]);
 
-        if(diagonal)
-        {
-            // DIAGONAL
-            if(top_right) this.neighbours.push(grid[this.Y-1][this.X+1]); // TOP RIGHT
+        if(down_left) this.neighbours.push(grid[this.Y+1][this.X - 1 + shiftXL]);
 
-            if(down_right) this.neighbours.push(grid[this.Y+1][this.X+1]); // BOTTOM RIGHT
+        if(right) this.neighbours.push(grid[this.Y][this.X+1]);
 
-            if(top_left) this.neighbours.push(grid[this.Y-1][this.X-1]); // TOP LEFT
-
-            if(down_left) this.neighbours.push(grid[this.Y+1][this.X-1]); // BOTTOM LEFT
-        }
+        if(left) this.neighbours.push(grid[this.Y][this.X-1]);
     }
 
     update_wall_neighbours(grid,space=1)
@@ -100,22 +94,17 @@ let dragging_tile = false;
 let dragged_tile = "";
 let is_running = false;
 
-if(window_x < 768){
-    tile_size = "small";
-    horizontal_cells = Math.floor(window_x /20);
-    vertical_cells = Math.floor(window_y / 20);
 
-    horizontal_cells = Math.floor( (window_x - horizontal_cells) /20);
-    vertical_cells = Math.floor( (window_y - vertical_cells) / 20);
-}
-else{
-    tile_size = "big"
-    horizontal_cells = Math.floor(window_x /25);
-    vertical_cells = Math.floor(window_y / 25);
+tile_size = "big"
+horizontal_cells = Math.floor(window_x / 35);
+vertical_cells = Math.floor(window_y / 35);
 
-    horizontal_cells = Math.floor( (window_x - horizontal_cells) /25);
-    vertical_cells = Math.floor( (window_y - vertical_cells) / 25);
-}
+horizontal_cells = Math.floor( (window_x - horizontal_cells) /35);
+vertical_cells = Math.floor( (window_y - vertical_cells) / 35);
+
+grid_HTML.style.width = `${horizontal_cells * 35}px`;
+grid_HTML.style.height = `${vertical_cells * 30}px`;
+
 
 // Start and End nodes
 let start_node = [Math.floor(horizontal_cells/3) , Math.floor(vertical_cells/2)];
@@ -128,9 +117,9 @@ let end_node_initial = [Math.floor(horizontal_cells/3*2) , Math.floor(vertical_c
 for(var i = 0; i < vertical_cells; i++)
 {
     let row = [];
-
+    let odd = i % 2 === 0;
     var row_HTML = document.createElement("div");
-    row_HTML.classList = "row " + tile_size;
+    row_HTML.classList = "row " + tile_size +  (odd ? " odd" : "");
     for(var j = 0; j < horizontal_cells; j++)
     {
         let cell = new Cell(j,i);

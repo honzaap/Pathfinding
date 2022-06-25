@@ -6,33 +6,22 @@
     text-decoration: none;
     box-sizing: border-box;
 }
-/* colors and their names don't match but I'm lazy to change it */
+
 :root{
-    --color-blue: #3FA34D;
-    --color-lightblue: #0a7ea1;
-    --color-red: #207394;
-    --color-lightgreen: #7678ED;
-    --color-darkgreen: #3D348B;
-    --color-orange: #F35B04 ;
-    --color-dark: #264653;
+    --start: #9faf20;
+    --end: #207094;
+    --open-path: #885771;
+    --closed-path: #a6819b;
+    --path: #ff6be6;
+    --wall: #001834;
 }
-.text-blue{ color: var(--color-blue);}
-.text-red{ color: var(--color-red);}
-.text-orange{ color: var(--color-orange);}
-.text-lightgreen{ color: var(--color-lightgreen);}
-.text-darkgreen{ color: var(--color-darkgreen);}
-.text-dark{ color: var(--color-dark);}
-.blue{ background-color: var(--color-blue);}
-.red{ background-color: var(--color-red);}
-.orange{ background-color: var(--color-orange);}
-.lightgreen{ background-color: var(--color-lightgreen);}
-.darkgreen{ background-color: var(--color-darkgreen);}
-.dark{ background-color: var(--color-dark);}
 
 body{
     height: 100vh;
     margin: 0 ;
     padding: 0;
+    background-color: #1e1f29;
+    color: #fff;
 }
 .page{
     width: 100%;
@@ -48,24 +37,27 @@ body{
     flex-flow: row wrap;
     justify-content: center;
     align-items: stretch;
-    font-size: 0.8em;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 15px 0;
 }
 .navbar-item{
     text-align: center;
-    height: 3.5em;
     display: flex;
     align-items: center;
+    margin: 0 10px;
 }
 .navbar-item-caption{
-    height: 1.5em;
     text-align: center;
-    background-color: var(--color-darkgreen);
+    background-color: var(--closed-path);
 }
 .general-button{
-    font-size: 1em;
+    color: #fff;
+    font-weight: inherit;
+    font-size: inherit;
     padding: 0.5em 1em;
     background-color: transparent;
-    transition: background-color 0.3s linear, transform 0.3s ease-out;
+    transition: background-color 0.3s linear, transform 0.15s ease-out;
 }
 .general-button:hover{
     cursor: pointer;
@@ -74,14 +66,16 @@ body{
     transform: scale(1.1);
 }
 .options-button:hover{
-    color: var(--color-darkgreen);
+    color: var(--path);
 }
 .start-button{
-    background-color: var(--color-lightblue);
+    background-color: var(--start);
+    border-radius: 50px;
     color: #fff;
+    padding: 20px 40px;
 }
 .start-button:hover{
-    background-color: var(--color-blue);
+    background-color: var(--end);
 }
 
 .speed-container{
@@ -137,10 +131,14 @@ body{
     right: 0;
     z-index: 99;
     text-align:left;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 220px;
 }
 .select-items div{
-    background-color: var(--color-lightgreen);
+    background-color: var(--open-path);
     transition: background-color 0.3s linear;
+    padding: 12px 20px;
 }
 /* Hide the items when the select box is closed: */
 .select-hide {
@@ -148,7 +146,7 @@ body{
 }
 
 .select-items div:hover, .same-as-selected {
-    background-color: var(--color-darkgreen);
+    background-color: var(--closed-path);
 }
 
 .select-selected {
@@ -166,20 +164,21 @@ body{
     overflow: hidden;
     appearance: none;
     width: 100%; 
-    height: 1em; 
+    height: 18px;
+    margin-top: 5px; 
     outline: none; 
-    border-radius: 5px;
-    border: 1px solid var(--color-dark);
+    border-radius: 15px;
 }
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none; 
     appearance: none;
-    width: 1em; 
-    height: 1em; 
+    width: 18px; 
+    height: 18px; 
+    border-radius: 15px;
     cursor: pointer;
-    background: var(--color-lightblue);
-    box-shadow: -80px 0 0 80px var(--color-dark);
+    background: var(--wall);
+    box-shadow: -85px 0 0 80px var(--path);
 }
 .slider::-moz-range-thumb {
     width: 1em;
@@ -189,14 +188,14 @@ body{
 }
 /** FF*/
 input[type="range"]::-moz-range-progress {
-  background-color: var(--color-blue); 
+  background-color: var(--start); 
 }
 input[type="range"]::-moz-range-track {  
   background-color: #fff;
 }
 /* IE*/
 input[type="range"]::-ms-fill-lower {
-  background-color: var(--color-blue); 
+  background-color: var(--start); 
 }
 input[type="range"]::-ms-fill-upper {  
   background-color:  #fff;
