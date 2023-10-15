@@ -21,7 +21,6 @@ export async function getNearestNode(latitude, longitude) {
     const boundingBox = getBoundingBoxFromPolygon(circle);
     const response = await fetchOverpassData(boundingBox, false);
     const data = await response.json();
-    console.log(data);
 
     let result;
     for(const node of data.elements) {
@@ -46,7 +45,6 @@ export async function getMapGraph(boundingBox, startNodeId) {
     const response = await fetchOverpassData(boundingBox, false);
     const data = await response.json();
     const elements = data.elements;
-    console.log(data);
     
     const graph = new Graph();
     for(const element of elements) {

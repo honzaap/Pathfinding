@@ -14,6 +14,7 @@ export default class Node {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.visited = false;
     }
 
     /**

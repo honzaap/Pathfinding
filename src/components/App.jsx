@@ -3,11 +3,11 @@ import { Map } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { PolygonLayer, ScatterplotLayer } from "@deck.gl/layers";
+import { TripsLayer } from "@deck.gl/geo-layers";
 import { createGeoJSONCircle } from "../helpers";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
-import GraphDebug from "./GraphDebug";
 
 const MAPBOX_ACCESS_TOKEN = "sk.eyJ1IjoiaG9uemFhcCIsImEiOiJjbG5vdXRtNm8wamNuMnJxaTl5d2dwaWZpIn0.nRWrLVhRxw7hZpE67i4Xuw";
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
@@ -24,12 +24,11 @@ function App() {
     const [startNode, setStartNode] = useState(null);
     const [endNode, setEndNode] = useState(null);
     const [selectionRadius, setSelectionRadius] = useState([]);
-    const scatterLayer = useMemo(() => {
-        const result = [];
-        if(startNode) result.push({ coordinates: [startNode.lon, startNode.lat], color: [255, 140, 0] });
-        if(endNode) result.push({ coordinates: [endNode.lon, endNode.lat], color: [255, 0, 0] });
-        return result;
-    }, [startNode, endNode]);
+    const [tripsData, setTripsData] = useState([]);
+    const [started, setStarted] = useState();
+    const [time, setTime] = useState(0);
+    const requestRef = useRef();
+    const previousTimeRef = useRef();
 
     async function onClick(e, info) {
         if(info.rightButton) {
@@ -37,8 +36,16 @@ function App() {
                 console.log("You need to pick a point in the highlighted radius"); // TODO
                 return;
             }
+            const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
+            setEndNode(node);
+            
+            const realEndNode = state.getNode(node.id);
+            if(!realEndNode) {
+                throw new Error("Somehow the end node isn't in bounds");
+            }
 
-            setEndNode(await getNearestNode(e.coordinate[1], e.coordinate[0]));
+            state.endNode = realEndNode;
+
             return;
         }
 
@@ -53,20 +60,38 @@ function App() {
     }
 
     function testClick() {
-        setStartNode(null);
-        setSelectionRadius(null);
-        setEndNode(null);
-        animate();
+        setStarted(true);
     }
 
-    function animate() {
+    let waypoints = [];
+    let test = 0;
+    function animate(newTime) {
         const updatedNode = state.nextStep();
-        if(!updatedNode) return;
-
-        // TODO: Somehow project changes to deckgl layer 
-
-        requestAnimationFrame(animate);
+        if(updatedNode) {
+            const referNode = updatedNode.referer;
+            let distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
+            const time = distance * 500000;
+            test += time;
+            waypoints = [...waypoints,
+                { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: test}
+            ];
+            setTripsData([{ waypoints }]);
+        }
+        if (previousTimeRef.current != undefined) {
+            const deltaTime = newTime - previousTimeRef.current;
+            setTime(prevTime => (prevTime + deltaTime));
+        }
+       
+        test++;
+        previousTimeRef.current = newTime;
+        requestRef.current = requestAnimationFrame(animate);
     }
+
+    useEffect(() => {
+        if(!started) return;
+        requestRef.current = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(requestRef.current);
+    }, [started]);
 
     return (
         <>
@@ -87,7 +112,10 @@ function App() {
                     />
                     <ScatterplotLayer 
                         id="start-end-points"
-                        data={scatterLayer}
+                        data={[
+                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: [255, 140, 0] }] : []),
+                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: [255, 0, 0] }] : []),
+                        ]}
                         pickable={true}
                         opacity={0.8}
                         stroked={true}
@@ -101,6 +129,29 @@ function App() {
                         getFillColor={d => d.color}
                         getLineColor={[0, 0, 0]}
                     />
+                    <TripsLayer
+                        id={"pathfinding-layer"}
+                        data={tripsData}
+                        getPath={d => d.waypoints.map(p => p.coordinates)}
+                        getTimestamps={d => d.waypoints.map(p => p.timestamp)}
+                        getColor={[253, 128, 93]}
+                        opacity={0.8}
+                        widthMinPixels={3}
+                        widthMaxPixels={5}
+                        fadeTrail={false}
+                        trailLength={6000}
+                        currentTime={time}
+                    />
+                    {/* <PathLayer 
+                        id={"path-layer"}
+
+                        pickable={true}
+                        widthScale={1}
+                        widthMinPixels={2}
+                        widthMaxPixels={4}
+                        getPath={d => d.path}
+                        getColor={[255, 100, 190]}
+                    /> */}
                     <Map 
                         mapboxAccessToken={MAPBOX_ACCESS_TOKEN} 
                         reuseMaps mapLib={maplibregl} 
@@ -109,8 +160,7 @@ function App() {
                     />
                 </DeckGL>
             </div>
-            <button className="test-btn" onClick={testClick}>X</button>
-            {startNode && <GraphDebug graph={state.graph}></GraphDebug>}
+            <button className="test-btn" onClick={testClick}>{time}</button>
         </>
     );
 }

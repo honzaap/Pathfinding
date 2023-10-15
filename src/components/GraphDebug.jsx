@@ -53,7 +53,6 @@ function GraphDebug() {
         for(const node of state.graph.nodes) {
             const x = (node.longitude - bb.minLon) / lonMul;
             const y = window.innerHeight - (node.latitude - bb.minLat) / latMul;
-            console.log(x, y);
             ctx.beginPath();
             ctx.arc(x, y, 0.65, 0, 2 * Math.PI);
             ctx.stroke();

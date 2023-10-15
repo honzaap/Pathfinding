@@ -3,7 +3,6 @@ import Node from "./Node";
 export default class Graph {
     constructor() {
         this.startNode = null;
-        this.endNode = null;
         this.nodes = [];
     }
 
