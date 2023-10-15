@@ -1,18 +1,27 @@
 import { fetchOverpassData } from "../api";
 import { createGeoJSONCircle } from "../helpers";
-import Node from "../models/Node";
+import Graph from "../models/Graph";
 
 /**
- * 
+ * @typedef {Object} OSMNode
+ * @property {String} type
+ * @property {Number} id
+ * @property {Number} lat
+ * @property {Number} lon
+ */
+
+/**
+ * Fetches data from OSM Overpass API and returns node nearest to specified coordinates
  * @param {Number} latitude 
  * @param {Number} longitude 
- * @returns OSM API object with type node
+ * @returns {Promise<OSMNode>} 
  */
 export async function getNearestNode(latitude, longitude) {
     const circle = createGeoJSONCircle([longitude, latitude], 0.15);
     const boundingBox = getBoundingBoxFromPolygon(circle);
     const response = await fetchOverpassData(boundingBox, false);
     const data = await response.json();
+    console.log(data);
 
     let result;
     for(const node of data.elements) {
@@ -29,36 +38,31 @@ export async function getNearestNode(latitude, longitude) {
             result = node;
         }
     }
-    console.log(result);
+
     return result;
 }
 
-export async function getMapGraph(boundingBox, startNodeId, endNodeId) {
+export async function getMapGraph(boundingBox, startNodeId) {
     const response = await fetchOverpassData(boundingBox, false);
     const data = await response.json();
     const elements = data.elements;
+    console.log(data);
     
-    const nodes = [];
-    let startNode;
-    let endNode;
+    const graph = new Graph();
     for(const element of elements) {
         if(element.type === "node") {
-            const node = new Node(element.id, element.lat, element.lon);
-            nodes.push(node);
+            const node = graph.addNode(element.id, element.lat, element.lon);
             
             if(node.id === startNodeId) {
-                startNode = node;
-            }
-            else if(node.id === endNodeId) {
-                endNode = node;
+                graph.startNode = node;
             }
         }
         else if(element.type === "way") {
             if(!element.nodes || element.nodes.length < 2) continue;
 
             for(let i = 0; i < element.nodes.length - 1; i++) {
-                const node1 = nodes.find(n => n.id === element.nodes[i]);
-                const node2 = nodes.find(n => n.id === element.nodes[i + 1]);
+                const node1 = graph.getNode(element.nodes[i]);
+                const node2 = graph.getNode(element.nodes[i + 1]);
 
                 if(!node1 || !node2) {
                     throw new Error("Node in a way was not found.");
@@ -69,9 +73,11 @@ export async function getMapGraph(boundingBox, startNodeId, endNodeId) {
         }
     }
 
-    if(!startNode || !endNode) {
-        throw new Error(`Start node or end node were not found. Start: ${startNode}, End: ${endNode}`);
+    if(!graph.startNode) {
+        throw new Error("Start node was not found.");
     }
+
+    return graph;
 }
 
 /**
@@ -80,7 +86,7 @@ export async function getMapGraph(boundingBox, startNodeId, endNodeId) {
  * @returns {Array} array with 2 objects both containing latitude and longitude properties
  */
 export function getBoundingBoxFromPolygon(polygon) {
-    const boundingBox = { minLat: Number.MAX_VALUE, maxLat: Number.MIN_VALUE, minLon: Number.MAX_VALUE, maxLon: Number.MIN_VALUE };
+    const boundingBox = { minLat: Number.MAX_VALUE, maxLat: -Number.MAX_VALUE, minLon: Number.MAX_VALUE, maxLon: -Number.MAX_VALUE };
     for(const coordinate of polygon) {
         if(coordinate[0] < boundingBox.minLon) boundingBox.minLon = coordinate[0];
         if(coordinate[0] > boundingBox.maxLon) boundingBox.maxLon = coordinate[0];

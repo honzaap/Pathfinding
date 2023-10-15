@@ -7,6 +7,7 @@ import { createGeoJSONCircle } from "../helpers";
 import { useMemo, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
+import GraphDebug from "./GraphDebug";
 
 const MAPBOX_ACCESS_TOKEN = "sk.eyJ1IjoiaG9uemFhcCIsImEiOiJjbG5vdXRtNm8wamNuMnJxaTl5d2dwaWZpIn0.nRWrLVhRxw7hZpE67i4Xuw";
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
@@ -20,8 +21,8 @@ const INITIAL_VIEW_STATE = {
 const state = new PathfindingState();
 
 function App() {
-    const [startNode, setStartNode] = useState();
-    const [endNode, setEndNode] = useState();
+    const [startNode, setStartNode] = useState(null);
+    const [endNode, setEndNode] = useState(null);
     const [selectionRadius, setSelectionRadius] = useState([]);
     const scatterLayer = useMemo(() => {
         const result = [];
@@ -47,10 +48,14 @@ function App() {
         const circle = createGeoJSONCircle([node.lon, node.lat], 2);
         setSelectionRadius([{ contour: circle}]);
 
-        getMapGraph(getBoundingBoxFromPolygon(circle));
+        const graph = await getMapGraph(getBoundingBoxFromPolygon(circle), node.id);
+        state.graph = graph;
     }
 
     function testClick() {
+        setStartNode(null);
+        setSelectionRadius(null);
+        setEndNode(null);
         animate();
     }
 
@@ -105,6 +110,7 @@ function App() {
                 </DeckGL>
             </div>
             <button className="test-btn" onClick={testClick}>X</button>
+            {startNode && <GraphDebug graph={state.graph}></GraphDebug>}
         </>
     );
 }

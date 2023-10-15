@@ -3,7 +3,7 @@ export default class PathfindingState {
 
     /**
      * Singleton class
-     * @returns PathfindingState
+     * @returns {PathfindingState}
      */
     constructor() {
         if (!PathfindingState.#instance) {
@@ -16,13 +16,7 @@ export default class PathfindingState {
         return PathfindingState.#instance;
     }
 
-    setGraph() {
-
-        return null;
-    }
-
     nextStep() {
-
         return null;
     }
 }

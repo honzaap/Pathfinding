@@ -1,6 +1,9 @@
 body {
     background-color: rgba(#000, 0.5);
     color: #fff;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .mapboxgl-canvas {
@@ -16,4 +19,13 @@ body {
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 20 ;
+}
+
+.graph-debug {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 1000px;
 }
