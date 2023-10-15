@@ -1,7 +1,28 @@
-export class Node {
-    
+import Edge from "./Edge";
 
-    constructor() {
+export default class Node {
 
+    /**
+     * 
+     * @param {Number} id 
+     * @param {Number} latitude 
+     * @param {Number} longitude 
+     */
+    constructor(id, latitude, longitude) {
+        this.edges = [];
+        this.referer = null;
+        this.id = id;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    /**
+     * 
+     * @param {Node} node 
+     */
+    connectTo(node) {
+        const edge = new Edge(this, node);
+        this.edges.push(edge);
+        node.edges.push(edge);
     }
 }
