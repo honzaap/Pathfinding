@@ -68,15 +68,19 @@ function App() {
     let test = 0;
     function animate(newTime) {
         const updatedNode = state.nextStep();
-        if(updatedNode) {
+        if(updatedNode && updatedNode.referer) {
             const referNode = updatedNode.referer;
             let distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
-            const time = distance * 500000;
-            test += time;
+            const time = distance * 500000; // 500000
             waypoints = [...waypoints,
-                { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: test}
+                { waypoints: [
+                    { coordinates: [referNode.longitude, referNode.latitude], timestamp: test},
+                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: test + time}
+                ]}
             ];
-            setTripsData([{ waypoints }]);
+            test += time;
+            console.log(waypoints);
+            setTripsData([...waypoints]);
         }
         if (previousTimeRef.current != undefined) {
             const deltaTime = newTime - previousTimeRef.current;

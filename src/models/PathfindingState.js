@@ -35,17 +35,20 @@ export default class PathfindingState {
     }
 
     nextStep() {
-        if(this.openList.length === 0) return;
+        if(this.openList.length === 0) {
+            console.log("open list is empty");
+            return;
+        }
 
         const currentNode = this.openList.reduce((acc, current) => current.f < acc.f ? current : acc, this.openList[0]);
-        console.log(currentNode);
         this.openList.splice(this.openList.indexOf(currentNode), 1); // TODO : possible optimization
         this.closedList.push(currentNode);
 
         // Found end node
         if(currentNode.id === this.endNode.id) {
             this.openList = [];
-            return null; // return neighbor;
+            console.log("FOUND END");
+            return currentNode; // return neighbor;
         }
 
         for(const neighbor of currentNode.neighbors) {
@@ -74,6 +77,8 @@ export default class PathfindingState {
 
             this.openList.push(neighbor);
         }
+
+        return currentNode;
     }
 }
 
