@@ -18,7 +18,6 @@ const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0
 };
-const state = new PathfindingState();
 
 function App() {
     const [startNode, setStartNode] = useState(null);
@@ -39,12 +38,12 @@ function App() {
             const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
             setEndNode(node);
             
-            const realEndNode = state.getNode(node.id);
+            const realEndNode = state.current.getNode(node.id);
             if(!realEndNode) {
                 throw new Error("Somehow the end node isn't in bounds");
             }
 
-            state.endNode = realEndNode;
+            state.current.endNode = realEndNode;
 
             return;
         }
@@ -56,38 +55,38 @@ function App() {
         setSelectionRadius([{ contour: circle}]);
 
         const graph = await getMapGraph(getBoundingBoxFromPolygon(circle), node.id);
-        state.graph = graph;
+        state.current.graph = graph;
     }
 
     function testClick() {
-        state.start();
+        state.current.start();
         setStarted(true);
     }
 
-    let waypoints = [];
-    let test = 0;
+    let timer = useRef(0);
+    const waypoints = useRef([]);
+    const state = useRef(new PathfindingState());
     function animate(newTime) {
-        const updatedNode = state.nextStep();
+        const updatedNode = state.current.nextStep();
+        console.log(newTime, updatedNode?.id);
         if(updatedNode && updatedNode.referer) {
             const referNode = updatedNode.referer;
             let distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
-            const time = distance * 500000; // 500000
-            waypoints = [...waypoints,
+            const time = distance * 50000; // 500000
+            waypoints.current = [...waypoints.current,
                 { waypoints: [
-                    { coordinates: [referNode.longitude, referNode.latitude], timestamp: test},
-                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: test + time}
+                    { coordinates: [referNode.longitude, referNode.latitude], timestamp: timer.current},
+                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time}
                 ]}
             ];
-            test += time;
-            console.log(waypoints);
-            setTripsData([...waypoints]);
+            timer.current += time;
+            setTripsData(() => waypoints.current);
         }
         if (previousTimeRef.current != undefined) {
             const deltaTime = newTime - previousTimeRef.current;
             setTime(prevTime => (prevTime + deltaTime));
         }
        
-        test++;
         previousTimeRef.current = newTime;
         requestRef.current = requestAnimationFrame(animate);
     }

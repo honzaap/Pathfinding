@@ -11,6 +11,7 @@ export default class Node {
     constructor(id, latitude, longitude) {
         this.edges = [];
         this.referer = null;
+        this.parent = null;
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;

@@ -36,7 +36,6 @@ export default class PathfindingState {
 
     nextStep() {
         if(this.openList.length === 0) {
-            console.log("open list is empty");
             return;
         }
 
@@ -47,58 +46,30 @@ export default class PathfindingState {
         // Found end node
         if(currentNode.id === this.endNode.id) {
             this.openList = [];
-            console.log("FOUND END");
-            return currentNode; // return neighbor;
+            return currentNode;
         }
 
         for(const neighbor of currentNode.neighbors) {
-            neighbor.referer = currentNode;
-        }
-
-        for(const neighbor of currentNode.neighbors) {
-            if(this.closedList.includes(neighbor)) {
-                continue;
-            }
-
-            // Update g and h value
-            // if(neighbor.g === -1) 
-            //     neighbor.g = Math.hypot(neighbor.longitude - this.startNode.longitude, neighbor.latitude - this.startNode.latitude);
-            // if(neighbor.h === -1) 
-            //     neighbor.h = Math.hypot(neighbor.longitude - this.endNode.longitude, neighbor.latitude - this.endNode.latitude);
-
-            neighbor.g = currentNode.g + Math.hypot(neighbor.longitude - currentNode.longitude, neighbor.latitude - currentNode.latitude);
-            neighbor.h = Math.hypot(neighbor.longitude - this.endNode.longitude, neighbor.latitude - this.endNode.latitude);
+            neighbor.h = Math.hypot(neighbor.longitude - this.endNode.longitude, neighbor.latitude - this.endNode.latitude); // TODO : uncesessary?
+            const neighborCurrentCost = currentNode.g + Math.hypot(neighbor.longitude - currentNode.longitude, neighbor.latitude - currentNode.latitude);
 
             if(this.openList.includes(neighbor)) {
-                if(this.openList.find(n => n.g < neighbor.g)) {
-                    continue;
-                }
+                if(neighbor.g <= neighborCurrentCost) continue;
             }
-
-            this.openList.push(neighbor);
+            else if(this.closedList.includes(neighbor)) {
+                if(neighbor.g <= neighborCurrentCost) continue;
+                this.closedList.splice(this.closedList.indexOf(neighbor), 1);
+                this.openList.push(neighbor);
+            }
+            else {
+                this.openList.push(neighbor);
+                //neighbor.h = Math.hypot(neighbor.longitude - this.endNode.longitude, neighbor.latitude - this.endNode.latitude);
+            }
+            neighbor.g = neighborCurrentCost;
+            neighbor.referer = currentNode;
         }
+        this.closedList.push(currentNode);
 
         return currentNode;
     }
 }
-
-
-
-
-
-// if(!this.currentNode) {
-//     this.currentNode = this.startNode;
-//     this.currentNode.visited = true;
-//     this.currentNode.referer = this.currentNode;
-//     return this.currentNode;
-// }
-
-// for(const edge of this.currentNode.edges) {
-//     const node = edge.getOtherNode(this.currentNode);
-//     if(!node.visited) {
-//         node.visited = true;
-//         node.referer = this.currentNode;
-//         this.currentNode = node;
-//         return this.currentNode;
-//     }
-// }
