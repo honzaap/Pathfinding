@@ -60,6 +60,7 @@ function App() {
     }
 
     function testClick() {
+        state.start();
         setStarted(true);
     }
 

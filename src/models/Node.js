@@ -15,6 +15,16 @@ export default class Node {
         this.latitude = latitude;
         this.longitude = longitude;
         this.visited = false;
+        this.g = 0;
+        this.h = 0;
+    }
+
+    get f() {
+        return this.g + this.h;
+    }
+
+    get neighbors() {
+        return this.edges.map(e => e.getOtherNode(this));
     }
 
     /**
