@@ -25,7 +25,7 @@ export default class Node {
     }
 
     get neighbors() {
-        return this.edges.map(e => e.getOtherNode(this));
+        return this.edges.map(edge => ({ edge, node: edge.getOtherNode(this)}));
     }
 
     /**

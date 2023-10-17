@@ -67,21 +67,25 @@ function App() {
     const waypoints = useRef([]);
     const state = useRef(new PathfindingState());
     function animate(newTime) {
-        const updatedNode = state.current.nextStep();
-        console.log(newTime, updatedNode?.id);
-        if(updatedNode && updatedNode.referer) {
+        const updatedNodes = state.current.nextStep();
+        for(const updatedNode of updatedNodes) {
+            if(!updatedNode.referer) continue;
+
             const referNode = updatedNode.referer;
             let distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
-            const time = distance * 50000; // 500000
+            const time = distance * 50000;
+
             waypoints.current = [...waypoints.current,
                 { waypoints: [
                     { coordinates: [referNode.longitude, referNode.latitude], timestamp: timer.current},
                     { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time}
                 ]}
             ];
+
             timer.current += time;
             setTripsData(() => waypoints.current);
         }
+
         if (previousTimeRef.current != undefined) {
             const deltaTime = newTime - previousTimeRef.current;
             setTime(prevTime => (prevTime + deltaTime));
@@ -139,7 +143,7 @@ function App() {
                         getPath={d => d.waypoints.map(p => p.coordinates)}
                         getTimestamps={d => d.waypoints.map(p => p.timestamp)}
                         getColor={[253, 128, 93]}
-                        opacity={0.8}
+                        opacity={1}
                         widthMinPixels={3}
                         widthMaxPixels={5}
                         fadeTrail={false}
