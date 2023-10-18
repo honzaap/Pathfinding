@@ -12,6 +12,7 @@ export default class PathfindingState {
             this.currentNode = null;
             this.openList = [];
             this.closedList = [];
+            this.finished = false;
             PathfindingState.#instance = this;
         }
     
@@ -49,6 +50,7 @@ export default class PathfindingState {
         // Found end node
         if(currentNode.id === this.endNode.id) {
             this.openList = [];
+            this.finished = true;
             return [currentNode];
         }
 

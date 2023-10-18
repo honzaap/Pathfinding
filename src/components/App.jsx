@@ -66,6 +66,7 @@ function App() {
     let timer = useRef(0);
     const waypoints = useRef([]);
     const state = useRef(new PathfindingState());
+    const traceNode = useRef(null);
     function animate(newTime) {
         const updatedNodes = state.current.nextStep();
         for(const updatedNode of updatedNodes) {
@@ -78,12 +79,32 @@ function App() {
             waypoints.current = [...waypoints.current,
                 { waypoints: [
                     { coordinates: [referNode.longitude, referNode.latitude], timestamp: timer.current},
-                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time}
+                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time},
                 ]}
             ];
 
             timer.current += time;
             setTripsData(() => waypoints.current);
+        }
+
+        if(state.current.finished) {
+            if(!traceNode.current) traceNode.current = state.current.endNode;
+            const parentNode = traceNode.current.parent;
+            if(parentNode) {
+                let distance = Math.hypot(traceNode.current.longitude - parentNode.longitude, traceNode.current.latitude - parentNode.latitude);
+                const time = distance * 50000;
+    
+                waypoints.current = [...waypoints.current,
+                    { waypoints: [
+                        { coordinates: [traceNode.current.longitude, traceNode.current.latitude], timestamp: timer.current},
+                        { coordinates: [parentNode.longitude, parentNode.latitude], timestamp: timer.current + time},
+                    ], color: [160, 100, 250]}
+                ];
+    
+                timer.current += time;
+                setTripsData(() => waypoints.current);
+                traceNode.current = parentNode;
+            }
         }
 
         if (previousTimeRef.current != undefined) {
@@ -142,7 +163,7 @@ function App() {
                         data={tripsData}
                         getPath={d => d.waypoints.map(p => p.coordinates)}
                         getTimestamps={d => d.waypoints.map(p => p.timestamp)}
-                        getColor={[253, 128, 93]}
+                        getColor={d => d.color ?? [253, 128, 93]}
                         opacity={1}
                         widthMinPixels={3}
                         widthMaxPixels={5}
