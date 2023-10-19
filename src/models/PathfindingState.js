@@ -9,7 +9,6 @@ export default class PathfindingState {
         if (!PathfindingState.#instance) {
             this.endNode = null;
             this.graph = null;
-            this.currentNode = null;
             this.openList = [];
             this.closedList = [];
             this.finished = false;
@@ -27,16 +26,25 @@ export default class PathfindingState {
         return this.graph?.getNode(id);
     }
 
+    reset() {
+        this.openList = [];
+        this.closedList = [];
+        this.finished = false;
+        for(const node of this.graph.nodes) {
+            node.reset();
+        }
+    }
+
     start() {
+        this.reset();
         this.openList = [this.startNode];
         this.startNode.g = 0;
         this.startNode.h = 0;
-        console.log(this.startNode);
-        console.log(this.endNode);
     }
 
     nextStep() {
         if(this.openList.length === 0) {
+            this.finished = true;
             return [];
         }
 

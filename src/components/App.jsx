@@ -26,10 +26,22 @@ function App() {
     const [tripsData, setTripsData] = useState([]);
     const [started, setStarted] = useState();
     const [time, setTime] = useState(0);
+    const [animationEnded, setAnimationEnded] = useState(false);
     const requestRef = useRef();
     const previousTimeRef = useRef();
+    const timer = useRef(0);
+    const waypoints = useRef([]);
+    const state = useRef(new PathfindingState());
+    const traceNode = useRef(null);
 
-    async function onClick(e, info) {
+    async function mapClick(e, info) {
+        // TODO : refactor
+        let cleared = false;
+        if(started && !animationEnded) return;
+        if(state.current.graph) {
+            clearPath();
+            cleared = true;
+        }
         if(info.rightButton) {
             if(e.layer?.id !== "selection-radius") {
                 console.log("You need to pick a point in the highlighted radius"); // TODO
@@ -53,33 +65,50 @@ function App() {
         setEndNode(null);
         const circle = createGeoJSONCircle([node.lon, node.lat], 2);
         setSelectionRadius([{ contour: circle}]);
-
+        
         const graph = await getMapGraph(getBoundingBoxFromPolygon(circle), node.id);
         state.current.graph = graph;
+        if(!cleared) clearPath();
     }
 
-    function testClick() {
+    function startPathfinding() {
+        clearPath();
         state.current.start();
         setStarted(true);
     }
 
-    let timer = useRef(0);
-    const waypoints = useRef([]);
-    const state = useRef(new PathfindingState());
-    const traceNode = useRef(null);
+    function togglePathfinding() {
+        setStarted(!started);
+        if(started) {
+            previousTimeRef.current = null;
+        }
+    }
+
+    function clearPath() {
+        setStarted(false);
+        setAnimationEnded(false);
+        setTripsData([]);
+        setTime(0);
+        state.current.reset();
+        waypoints.current = [];
+        timer.current = 0;
+        previousTimeRef.current = null;
+        traceNode.current = null;
+    }
+
     function animate(newTime) {
         const updatedNodes = state.current.nextStep();
         for(const updatedNode of updatedNodes) {
             if(!updatedNode.referer) continue;
 
             const referNode = updatedNode.referer;
-            let distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
+            const distance = Math.hypot(updatedNode.longitude - referNode.longitude, updatedNode.latitude - referNode.latitude);
             const time = distance * 50000;
 
             waypoints.current = [...waypoints.current,
                 { waypoints: [
-                    { coordinates: [referNode.longitude, referNode.latitude], timestamp: timer.current},
-                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time},
+                    { coordinates: [referNode.longitude, referNode.latitude], timestamp: timer.current },
+                    { coordinates: [updatedNode.longitude, updatedNode.latitude], timestamp: timer.current + time },
                 ]}
             ];
 
@@ -90,14 +119,14 @@ function App() {
         if(state.current.finished) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
-            if(parentNode) {
-                let distance = Math.hypot(traceNode.current.longitude - parentNode.longitude, traceNode.current.latitude - parentNode.latitude);
+            if(parentNode) { // TODO : refactor
+                const distance = Math.hypot(traceNode.current.longitude - parentNode.longitude, traceNode.current.latitude - parentNode.latitude);
                 const time = distance * 50000;
     
                 waypoints.current = [...waypoints.current,
                     { waypoints: [
-                        { coordinates: [traceNode.current.longitude, traceNode.current.latitude], timestamp: timer.current},
-                        { coordinates: [parentNode.longitude, parentNode.latitude], timestamp: timer.current + time},
+                        { coordinates: [traceNode.current.longitude, traceNode.current.latitude], timestamp: timer.current },
+                        { coordinates: [parentNode.longitude, parentNode.latitude], timestamp: timer.current + time },
                     ], color: [160, 100, 250]}
                 ];
     
@@ -105,13 +134,13 @@ function App() {
                 setTripsData(() => waypoints.current);
                 traceNode.current = parentNode;
             }
+            setAnimationEnded(time >= timer.current);
         }
-
-        if (previousTimeRef.current != undefined) {
+        if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
             setTime(prevTime => (prevTime + deltaTime));
         }
-       
+
         previousTimeRef.current = newTime;
         requestRef.current = requestAnimationFrame(animate);
     }
@@ -120,7 +149,7 @@ function App() {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(requestRef.current);
-    }, [started]);
+    }, [started, time, animationEnded]);
 
     return (
         <>
@@ -128,7 +157,7 @@ function App() {
                 <DeckGL
                     initialViewState={INITIAL_VIEW_STATE}
                     controller={{ doubleClickZoom: false }}
-                    onClick={onClick}
+                    onClick={mapClick}
                 >
                     <PolygonLayer 
                         id={"selection-radius"}
@@ -171,16 +200,6 @@ function App() {
                         trailLength={6000}
                         currentTime={time}
                     />
-                    {/* <PathLayer 
-                        id={"path-layer"}
-
-                        pickable={true}
-                        widthScale={1}
-                        widthMinPixels={2}
-                        widthMaxPixels={4}
-                        getPath={d => d.path}
-                        getColor={[255, 100, 190]}
-                    /> */}
                     <Map 
                         mapboxAccessToken={MAPBOX_ACCESS_TOKEN} 
                         reuseMaps mapLib={maplibregl} 
@@ -189,7 +208,14 @@ function App() {
                     />
                 </DeckGL>
             </div>
-            <button className="test-btn" onClick={testClick}>{time}</button>
+            <div className="test-buttons">
+                <button disabled={!startNode || !endNode} onClick={startPathfinding}>{time}</button>
+                <button disabled={!animationEnded && started} onClick={clearPath}>clear</button>
+                <button disabled={time === 0 || animationEnded} onClick={togglePathfinding}>
+                    {(started || time === 0) && <span>stop</span>}
+                    {(!started && time > 0) && <span>resume</span>}
+                </button>
+            </div>
         </>
     );
 }

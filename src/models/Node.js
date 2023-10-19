@@ -10,14 +10,12 @@ export default class Node {
      */
     constructor(id, latitude, longitude) {
         this.edges = [];
-        this.referer = null;
-        this.parent = null;
+        this.reset();
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
         this.visited = false;
-        this.g = 0;
-        this.h = 0;
+
     }
 
     get f() {
@@ -36,5 +34,16 @@ export default class Node {
         const edge = new Edge(this, node);
         this.edges.push(edge);
         node.edges.push(edge);
+    }
+
+    reset() {
+        this.g = 0; // TODO : better name
+        this.h = 0; // TODO : better name
+        this.parent = null;
+        this.referer = null;
+
+        for(const neighbor of this.neighbors) {
+            neighbor.edge.visited = false; // TODO : possible optimization
+        }
     }
 }
