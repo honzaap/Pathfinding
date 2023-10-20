@@ -3,7 +3,7 @@ import Node from "./Node";
 export default class Graph {
     constructor() {
         this.startNode = null;
-        this.nodes = [];
+        this.nodes = new Map();
     }
 
     /**
@@ -12,7 +12,7 @@ export default class Graph {
      * @returns node with given Id
      */
     getNode(id) {
-        return this.nodes.find(n => n.id === id);
+        return this.nodes.get(id);
     }
 
     /**
@@ -24,7 +24,7 @@ export default class Graph {
      */
     addNode(id, latitude, longitude) {
         const node = new Node(id, latitude, longitude);
-        this.nodes.push(node);
+        this.nodes.set(node.id, node);
         return node;
     }
 }

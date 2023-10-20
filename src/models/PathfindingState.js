@@ -31,8 +31,8 @@ export default class PathfindingState {
         this.closedList = [];
         this.finished = false;
         if(!this.graph) return;
-        for(const node of this.graph.nodes) {
-            node.reset();
+        for(const key of this.graph.nodes.keys()) {
+            this.graph.nodes.get(key).reset();
         }
     }
 
@@ -51,9 +51,7 @@ export default class PathfindingState {
 
         const updatedNodes = [];
         const currentNode = this.openList.reduce((acc, current) => current.f < acc.f ? current : acc, this.openList[0]);
-        const time = performance.now();
         this.openList.splice(this.openList.indexOf(currentNode), 1);
-        console.log(performance.now() - time);
         currentNode.visited = true;
         const refEdge = currentNode.edges.find(e => e.getOtherNode(currentNode) === currentNode.referer);
         if(refEdge) refEdge.visited = true;

@@ -47,7 +47,6 @@ export async function getMapGraph(boundingBox, startNodeId) {
     const elements = data.elements;
     
     const graph = new Graph();
-    const time = performance.now();
     for(const element of elements) {
         if(element.type === "node") {
             const node = graph.addNode(element.id, element.lat, element.lon);
@@ -71,7 +70,6 @@ export async function getMapGraph(boundingBox, startNodeId) {
             }
         }
     }
-    console.log("building whole: " + (performance.now() - time));
 
     if(!graph.startNode) {
         throw new Error("Start node was not found.");
