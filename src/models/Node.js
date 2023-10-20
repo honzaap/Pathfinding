@@ -37,13 +37,14 @@ export default class Node {
     }
 
     reset() {
+        this.visited = false;
         this.g = 0; // TODO : better name
         this.h = 0; // TODO : better name
         this.parent = null;
         this.referer = null;
 
         for(const neighbor of this.neighbors) {
-            neighbor.edge.visited = false; // TODO : possible optimization
+            neighbor.edge.visited = false;
         }
     }
 }
