@@ -89,12 +89,12 @@ function Map() {
             updateWaypoints(updatedNode, updatedNode.referer);
         }
 
-        if(state.current.finished) {
+        if(state.current.finished && !animationEnded) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
             updateWaypoints(parentNode, traceNode.current, [160, 100, 250]);
             traceNode.current = parentNode ?? traceNode.current;
-            setAnimationEnded(time >= timer.current);
+            setAnimationEnded(time >= timer.current && parentNode == null);
         }
 
         if (previousTimeRef.current != null && !animationEnded) {
@@ -193,6 +193,8 @@ function Map() {
                 startPathfinding={startPathfinding}
                 toggleAnimation={toggleAnimation}
                 clearPath={clearPath}
+                timeChanged={setTime}
+                maxTime={timer.current}
             />
         </>
     );
