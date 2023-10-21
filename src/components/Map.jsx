@@ -10,6 +10,7 @@ import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../servi
 import PathfindingState from "../models/PathfindingState";
 import Interface from "./Interface";
 import { INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
+import useSmoothStateChange from "../hooks/useSmoothStateChange";
 
 function Map() {
     const [startNode, setStartNode] = useState(null);
@@ -19,15 +20,21 @@ function Map() {
     const [started, setStarted] = useState();
     const [time, setTime] = useState(0);
     const [animationEnded, setAnimationEnded] = useState(false);
+    const fadeRadius = useRef();
+    const fadeRadiusReverse = useRef(false);
     const requestRef = useRef();
     const previousTimeRef = useRef();
     const timer = useRef(0);
     const waypoints = useRef([]);
     const state = useRef(new PathfindingState());
     const traceNode = useRef(null);
+    const selectionRadiusOpacity = useSmoothStateChange(0, 0, 1, 400, fadeRadius.current, fadeRadiusReverse.current);
 
     async function mapClick(e, info) {
         if(started && !animationEnded) return;
+        // setFadeSelectionRadius(true);
+        fadeRadiusReverse.current = false;
+        fadeRadius.current = true;
         clearPath();
         if(info.rightButton) {
             if(e.layer?.id !== "selection-radius") {
@@ -60,9 +67,12 @@ function Map() {
     }
 
     function startPathfinding() {
-        clearPath();
-        state.current.start();
-        setStarted(true);
+        fadeRadiusReverse.current = true;
+        setTimeout(() => {
+            clearPath();
+            state.current.start();
+            setStarted(true);
+        }, 400);
     }
 
     function toggleAnimation() {
@@ -142,8 +152,8 @@ function Map() {
                         pickable={true}
                         stroked={false}
                         getPolygon={d => d.contour}
-                        getFillColor={[240, 112, 145]}
-                        opacity={0.03}
+                        getFillColor={[240, 112, 145, 35]}
+                        opacity={selectionRadiusOpacity}
                     />
                     <TripsLayer
                         id={"pathfinding-layer"}
