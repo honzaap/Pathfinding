@@ -28,5 +28,6 @@ module.exports = {
             { allowConstantExport: true },
         ],
         "react/prop-types": 0,
+        "react/jsx-no-target-blank": 0,
     },
 }

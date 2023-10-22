@@ -101,7 +101,7 @@ function Map() {
         if(state.current.finished && !animationEnded) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
-            updateWaypoints(parentNode, traceNode.current, [160, 100, 250]);
+            updateWaypoints(parentNode, traceNode.current, [165, 13, 32]);
             traceNode.current = parentNode ?? traceNode.current;
             setAnimationEnded(time >= timer.current && parentNode == null);
         }
@@ -149,9 +149,11 @@ function Map() {
                         id={"selection-radius"}
                         data={selectionRadius}
                         pickable={true}
-                        stroked={false}
+                        stroked={true}
                         getPolygon={d => d.contour}
-                        getFillColor={[240, 112, 145, 35]}
+                        getFillColor={[80, 210, 0, 10]}
+                        getLineColor={[9, 142, 46, 175]}
+                        getLineWidth={3}
                         opacity={selectionRadiusOpacity}
                     />
                     <TripsLayer
@@ -163,9 +165,9 @@ function Map() {
                             if(d.color) return d.color;
                             const delta = Math.abs(time - d.timestamp);
                             const color = [
-                                Math.max(70 - delta * 0.1, 70 / 2),
-                                Math.max(183 - delta * 0.1, 183 / 2),
-                                Math.max(128 - delta * 0.1, 64 / 2),
+                                Math.max((70 * 1.55) - delta * 0.1, 70),
+                                Math.max((183 * 1.6) - delta * 0.1, 183),
+                                Math.max((128 * 1.75) - delta * 0.1, 128),
                             ];
                             return color;
                         }}
@@ -182,11 +184,11 @@ function Map() {
                     <ScatterplotLayer 
                         id="start-end-points"
                         data={[
-                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: [255, 140, 0] }] : []),
-                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: [255, 0, 0] }] : []),
+                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: [70, 183, 128], lineColor: [255, 255, 255] }] : []),
+                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: [152, 4, 12], lineColor: [0, 0, 0] }] : []),
                         ]}
                         pickable={true}
-                        opacity={0.8}
+                        opacity={1}
                         stroked={true}
                         filled={true}
                         radiusScale={1}
@@ -196,7 +198,7 @@ function Map() {
                         lineWidthMaxPixels={3}
                         getPosition={d => d.coordinates}
                         getFillColor={d => d.color}
-                        getLineColor={[0, 0, 0]}
+                        getLineColor={d => d.lineColor}
                     />
                     <MapGL 
                         mapboxAccessToken={MAPBOX_ACCESS_TOKEN} 

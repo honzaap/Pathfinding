@@ -1,5 +1,5 @@
 body {
-    background-color: rgba(#000, 0.5);
+    background-color: #111;
     color: #fff;
     width: 100vw;
     height: 100vh;
@@ -16,12 +16,7 @@ body {
 }
 
 .test-buttons {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    z-index: 20;
-    display: flex;
-    gap: 10px;
+    display: none;
 }
 
 .graph-debug {
@@ -32,6 +27,37 @@ body {
     height: 1000px;
 }
 
-input[type=range] {
-    width: 200px;
+.nav-top {
+    position: fixed;
+    left: 0;
+    top: 16px;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+
+    .side {
+        width: 240px;
+    }
+
+    .slider-container {
+        display: flex;
+        flex-direction: column;
+    }
 }
+
+.nav-right {
+    position: fixed;
+    left: 24px;
+    top: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.loader-container {
+    position: absolute;
+    right: 24px;
+    bottom: 10vh;
+}
+

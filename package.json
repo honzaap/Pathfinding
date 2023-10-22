@@ -16,6 +16,7 @@
     "@deck.gl/layers": "^8.9.31",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.14",
     "@mui/material": "^5.14.14",
     "deck.gl": "^8.9.31",
     "maplibre-gl": "^3.5.0",
