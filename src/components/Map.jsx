@@ -32,7 +32,6 @@ function Map() {
 
     async function mapClick(e, info) {
         if(started && !animationEnded) return;
-        // setFadeSelectionRadius(true);
         fadeRadiusReverse.current = false;
         fadeRadius.current = true;
         clearPath();
@@ -125,7 +124,7 @@ function Map() {
             { waypoints: [
                 { coordinates: [refererNode.longitude, refererNode.latitude], timestamp: timer.current },
                 { coordinates: [node.longitude, node.latitude], timestamp: timer.current + timeAdd },
-            ], color}
+            ], color, timestamp: timer.current + timeAdd}
         ];
 
         timer.current += timeAdd;
@@ -160,13 +159,25 @@ function Map() {
                         data={tripsData}
                         getPath={d => d.waypoints.map(p => p.coordinates)}
                         getTimestamps={d => d.waypoints.map(p => p.timestamp)}
-                        getColor={d => d.color ?? [253, 128, 93]}
+                        getColor={(d) => {
+                            if(d.color) return d.color;
+                            const delta = Math.abs(time - d.timestamp);
+                            const color = [
+                                Math.max(70 - delta * 0.1, 70 / 2),
+                                Math.max(183 - delta * 0.1, 183 / 2),
+                                Math.max(128 - delta * 0.1, 64 / 2),
+                            ];
+                            return color;
+                        }}
                         opacity={1}
                         widthMinPixels={3}
                         widthMaxPixels={5}
                         fadeTrail={false}
                         trailLength={6000}
                         currentTime={time}
+                        updateTriggers={{
+                            getColor: [time]
+                        }}
                     />
                     <ScatterplotLayer 
                         id="start-end-points"
