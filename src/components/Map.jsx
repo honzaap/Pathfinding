@@ -21,19 +21,19 @@ function Map() {
     const [time, setTime] = useState(0);
     const [animationEnded, setAnimationEnded] = useState(false);
     const [playbackOn, setPlaybackOn] = useState(false);
+    const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false);
     const fadeRadius = useRef();
-    const fadeRadiusReverse = useRef(false);
     const requestRef = useRef();
     const previousTimeRef = useRef();
     const timer = useRef(0);
     const waypoints = useRef([]);
     const state = useRef(new PathfindingState());
     const traceNode = useRef(null);
-    const selectionRadiusOpacity = useSmoothStateChange(0, 0, 1, 400, fadeRadius.current, fadeRadiusReverse.current);
+    const selectionRadiusOpacity = useSmoothStateChange(0, 0, 1, 400, fadeRadius.current, fadeRadiusReverse);
 
     async function mapClick(e, info) {
         if(started && !animationEnded) return;
-        fadeRadiusReverse.current = false;
+        setFadeRadiusReverse(false);
         fadeRadius.current = true;
         clearPath();
         if(info.rightButton) {
@@ -67,7 +67,7 @@ function Map() {
     }
 
     function startPathfinding() {
-        fadeRadiusReverse.current = true;
+        setFadeRadiusReverse(true);
         setTimeout(() => {
             clearPath();
             state.current.start();
@@ -103,14 +103,15 @@ function Map() {
     }
 
     function animate(newTime) {
+        const deltaTime = previousTimeRef.current ? newTime - previousTimeRef.current : 10;
         for(const updatedNode of state.current.nextStep()) {
-            updateWaypoints(updatedNode, updatedNode.referer);
+            updateWaypoints(updatedNode, updatedNode.referer, deltaTime);
         }
 
         if(state.current.finished && !animationEnded) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
-            updateWaypoints(parentNode, traceNode.current, [165, 13, 32]);
+            updateWaypoints(parentNode, traceNode.current, deltaTime, [165, 13, 32]);
             traceNode.current = parentNode ?? traceNode.current;
             setAnimationEnded(time >= timer.current && parentNode == null);
         }
@@ -124,7 +125,6 @@ function Map() {
             if(time >= timer.current) {
                 setPlaybackOn(false);
             }
-            const deltaTime = newTime - previousTimeRef.current;
             setTime(prevTime => (prevTime + deltaTime));
         }
 
@@ -132,10 +132,10 @@ function Map() {
         requestRef.current = requestAnimationFrame(animate);
     }
 
-    function updateWaypoints(node, refererNode, color = undefined) {
+    function updateWaypoints(node, refererNode, deltaTime, color = undefined) {
         if(!node || !refererNode) return;
         const distance = Math.hypot(node.longitude - refererNode.longitude, node.latitude - refererNode.latitude);
-        const timeAdd = distance * 50000; // todo : speed variable
+        const timeAdd = distance * (Math.log(deltaTime) * 26000);
 
         waypoints.current = [...waypoints.current,
             { waypoints: [
