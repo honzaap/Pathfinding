@@ -17,6 +17,6 @@ const SuccessSlider = styled(Slider)(() => ({
     },
 }));
 
-export default function StyledCustomization({ disabled, value, min, max, onInput, onChange, defaultValue }) {
-    return <SuccessSlider disabled={disabled} value={value} min={min} max={max} onInput={onInput} onChange={onChange} defaultValue={defaultValue} />;
+export default function StyledCustomization({ disabled, value, min, max, onInput, onChange, defaultValue, marks, style }) {
+    return <SuccessSlider disabled={disabled} value={value} min={min} max={max} onInput={onInput} onChange={onChange} defaultValue={defaultValue} marks={marks} style={style} />;
 }

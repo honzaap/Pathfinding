@@ -69,3 +69,18 @@ body {
 .Mui-disabled { 
     filter: saturate(0);
 }
+
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 290px;
+    padding: 25px;
+    background: linear-gradient(180deg, #2A2B37 0%, #1F2029 100%);
+    box-shadow: 7px 0px 20px 0px rgba(0, 0, 0, 0.25);
+    gap: 25px;
+
+    button {
+        width: 100%;
+    }
+}
