@@ -60,4 +60,12 @@ body {
     right: 24px;
     bottom: 10vh;
 }
+.MuiSlider-root {
+    .MuiSlider-thumb, .MuiSlider-track {
+        transition: box-shadow 300ms ease;
+    }
+}
 
+.Mui-disabled { 
+    filter: saturate(0);
+}

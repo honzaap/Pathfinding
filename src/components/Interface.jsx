@@ -1,17 +1,25 @@
 import { Button, IconButton, Typography, Snackbar, Alert, CircularProgress, Fade, Tooltip } from "@mui/material";
-import { PlayArrow, Settings, Movie } from "@mui/icons-material";
+import { PlayArrow, Settings, Movie, Pause } from "@mui/icons-material";
 import Slider from "./Slider";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 
-function Interface({ canStart, started, animationEnded, time, maxTime, timeChanged, startPathfinding, toggleAnimation, clearPath }) {
+function Interface({ canStart, started, animationEnded, playbackOn, time, maxTime, timeChanged, startPathfinding, toggleAnimation, clearPath }) {
     const [loading, setLoading] = useState(false);
     const [snackOpen, setSnackOpen] = useState(false);
     const timerRef = useRef();
 
     function closeSnack() {
         setSnackOpen(false);
+    }
+
+    function handlePlay() {
+        if(!started && time === 0) {
+            startPathfinding();
+            return;
+        }
+        toggleAnimation();
     }
 
     useEffect(() => {
@@ -34,8 +42,11 @@ function Interface({ canStart, started, animationEnded, time, maxTime, timeChang
                     </Typography>
                     <Slider disabled={!animationEnded}  value={animationEnded ? time : maxTime} min={animationEnded ? 0 : -1} max={maxTime} onChange={(e) => {timeChanged(Number(e.target.value));}} className="slider" aria-labelledby="playback-slider" />
                 </div>
-                <IconButton disabled={canStart} onClick={startPathfinding} style={{ backgroundColor: "#46B780", width: 60, height: 60 }} size="large">
-                    <PlayArrow style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
+                <IconButton disabled={canStart} onClick={handlePlay} style={{ backgroundColor: "#46B780", width: 60, height: 60 }} size="large">
+                    {(!started || animationEnded && !playbackOn) 
+                        ? <PlayArrow style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
+                        : <Pause style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
+                    }
                 </IconButton>
                 <div className="side">
                     <Button disabled={!animationEnded && started} onClick={clearPath} style={{ color: "#fff", backgroundColor: "#404156", paddingInline: 30, paddingBlock: 7 }} variant="contained">Clear path</Button>

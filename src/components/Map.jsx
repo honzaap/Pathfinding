@@ -20,6 +20,7 @@ function Map() {
     const [started, setStarted] = useState();
     const [time, setTime] = useState(0);
     const [animationEnded, setAnimationEnded] = useState(false);
+    const [playbackOn, setPlaybackOn] = useState(false);
     const fadeRadius = useRef();
     const fadeRadiusReverse = useRef(false);
     const requestRef = useRef();
@@ -75,6 +76,14 @@ function Map() {
     }
 
     function toggleAnimation() {
+        if(animationEnded) {
+            if(time >= timer.current) {
+                setTime(0);
+            }
+            setStarted(true);
+            setPlaybackOn(!playbackOn);
+            return;
+        }
         setStarted(!started);
         if(started) {
             previousTimeRef.current = null;
@@ -111,6 +120,14 @@ function Map() {
             setTime(prevTime => (prevTime + deltaTime));
         }
 
+        if(previousTimeRef.current != null && animationEnded && playbackOn) {
+            if(time >= timer.current) {
+                setPlaybackOn(false);
+            }
+            const deltaTime = newTime - previousTimeRef.current;
+            setTime(prevTime => (prevTime + deltaTime));
+        }
+
         previousTimeRef.current = newTime;
         requestRef.current = requestAnimationFrame(animate);
     }
@@ -135,7 +152,7 @@ function Map() {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(requestRef.current);
-    }, [started, time, animationEnded]);
+    }, [started, time, animationEnded, playbackOn]);
 
     return (
         <>
@@ -212,6 +229,7 @@ function Map() {
                 canStart={!startNode || !endNode}
                 started={started}
                 animationEnded={animationEnded}
+                playbackOn={playbackOn}
                 time={time}
                 startPathfinding={startPathfinding}
                 toggleAnimation={toggleAnimation}
