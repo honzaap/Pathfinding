@@ -73,7 +73,6 @@ body {
 .sidebar-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
     width: 290px;
     padding: 25px;
     background: linear-gradient(180deg, #2A2B37 0%, #1F2029 100%);
@@ -82,5 +81,45 @@ body {
 
     button {
         width: 100%;
+    }
+}
+
+.MuiTextField-root {
+    border-radius: 4px;
+    width: 100%;
+
+    .MuiOutlinedInput-notchedOutline {
+        border: 0;
+    }
+
+    .MuiInputBase-input {
+        padding-block: 12px;
+    }
+
+    .MuiButtonBase-root {
+        border-radius: 4px;
+        box-shadow: 2px 2px 6px 0px rgba(0, 0, 0, 0.41);
+    }
+}
+
+.styles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.shortcuts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    .shortcut {
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+
+        p {
+            margin-block: 0;
+        }
     }
 }

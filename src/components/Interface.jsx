@@ -1,15 +1,26 @@
 import { Button, IconButton, Typography, Snackbar, Alert, CircularProgress, Fade, Tooltip, Drawer, MenuItem, Select, InputLabel, FormControl, Menu } from "@mui/material";
+import { MuiColorInput } from "mui-color-input";
 import { PlayArrow, Settings, Movie, Pause } from "@mui/icons-material";
 import Slider from "./Slider";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 
+const initialColors = {
+    startNodeFill: "rgb(70, 183, 128)",
+    startNodeBorder: "rgb(255, 255, 255)",
+    endNodeFill: "rgb(152, 4, 12)",
+    endNodeBorder: "rgb(0, 0, 0)",
+    path: "rgb(70, 183, 128)",
+    route: "rgb(165, 13, 32)",
+};
+
 function Interface({ canStart, started, animationEnded, playbackOn, time, maxTime, timeChanged, startPathfinding, toggleAnimation, clearPath }) {
     const [sidebar, setSidebar] = useState(false);
     const [loading, setLoading] = useState(false);
     const [snackOpen, setSnackOpen] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState(null);
+    const [colors, setColors] = useState(initialColors);
     const menuOpen = Boolean(menuAnchor);
     const timerRef = useRef();
 
@@ -183,6 +194,72 @@ function Interface({ canStart, started, animationEnded, playbackOn, time, maxTim
                             Animation speed
                         </Typography>
                         <Slider min={1} max={10} step={0.5} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
+                    </div>
+
+                    <div className="styles-container">
+                        <Typography style={{ color: "#A8AFB3", textTransform: "uppercase" }} >
+                            Styles
+                        </Typography>
+                        <div>
+                            <Typography id="start-fill-label" >
+                                Start node fill color
+                            </Typography>
+                            <MuiColorInput value={colors.startNodeFill} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="start-fill-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+
+                        <div>
+                            <Typography id="start-border-label" >
+                                Start node border color
+                            </Typography>
+                            <MuiColorInput value={colors.startNodeBorder} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="start-border-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+
+                        <div>
+                            <Typography id="end-fill-label" >
+                                End node fill color
+                            </Typography>
+                            <MuiColorInput value={colors.endNodeFill} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="end-fill-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+
+                        <div>
+                            <Typography id="end-border-label" >
+                                End node border color
+                            </Typography>
+                            <MuiColorInput value={colors.endNodeBorder} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="end-border-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+
+                        <div>
+                            <Typography id="path-label" >
+                                Path color
+                            </Typography>
+                            <MuiColorInput value={colors.path} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="path-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+
+                        <div>
+                            <Typography id="route-label" >
+                                Shortest route color
+                            </Typography>
+                            <MuiColorInput value={colors.route} onChange={v => {setColors({...colors, fff: v});}} aria-labelledby="route-label" style={{ backgroundColor: "#404156" }} />
+                        </div>
+                    </div>
+
+                    <div className="shortcuts-container">
+                        <Typography style={{ color: "#A8AFB3", textTransform: "uppercase" }} >
+                            Shortcuts
+                        </Typography>
+
+                        <div className="shortcut">
+                            <p>SPACE</p>
+                            <p>Start/Stop animation</p>
+                        </div>
+                        <div className="shortcut">
+                            <p>R</p>
+                            <p>Clear path</p>
+                        </div>
+                        <div className="shortcut">
+                            <p>Arrows</p>
+                            <p>Animation playback</p>
+                        </div>
                     </div>
                 </div>
             </Drawer>

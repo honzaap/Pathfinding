@@ -20,6 +20,7 @@
     "@mui/material": "^5.14.14",
     "deck.gl": "^8.9.31",
     "maplibre-gl": "^3.5.0",
+    "mui-color-input": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-map-gl": "^7.1.6",
