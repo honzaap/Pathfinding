@@ -22,3 +22,9 @@ export function createGeoJSONCircle(center, radiusInKm, points = 64) {
     
     return ret;
 }
+
+export function rgbToArray(color) {
+    const result = color.match(/\d+(\.\d)?/g).map(Number);
+    if(result[3]) result[3] *= 255;
+    return result;
+}

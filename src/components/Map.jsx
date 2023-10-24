@@ -4,12 +4,12 @@ import maplibregl from "maplibre-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { PolygonLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TripsLayer } from "@deck.gl/geo-layers";
-import { createGeoJSONCircle } from "../helpers";
+import { createGeoJSONCircle, rgbToArray } from "../helpers";
 import { useEffect, useRef, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
 import Interface from "./Interface";
-import { INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
+import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
 import useSmoothStateChange from "../hooks/useSmoothStateChange";
 
 function Map() {
@@ -22,6 +22,12 @@ function Map() {
     const [animationEnded, setAnimationEnded] = useState(false);
     const [playbackOn, setPlaybackOn] = useState(false);
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false);
+    const [settings, setSettings] = useState({
+        algorithm: "astar",
+        radius: 2,
+        speed: 1, 
+    });
+    const [colors, setColors] = useState(INITIAL_COLORS);
     const fadeRadius = useRef();
     const requestRef = useRef();
     const previousTimeRef = useRef();
@@ -57,7 +63,7 @@ function Map() {
         const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
         setStartNode(node);
         setEndNode(null);
-        const circle = createGeoJSONCircle([node.lon, node.lat], 2);
+        const circle = createGeoJSONCircle([node.lon, node.lat], settings.radius);
         setSelectionRadius([{ contour: circle}]);
         
         getMapGraph(getBoundingBoxFromPolygon(circle), node.id).then(graph => {
@@ -103,39 +109,41 @@ function Map() {
     }
 
     function animate(newTime) {
-        const deltaTime = previousTimeRef.current ? newTime - previousTimeRef.current : 10;
         for(const updatedNode of state.current.nextStep()) {
-            updateWaypoints(updatedNode, updatedNode.referer, deltaTime);
+            updateWaypoints(updatedNode, updatedNode.referer);
         }
 
         if(state.current.finished && !animationEnded) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
-            updateWaypoints(parentNode, traceNode.current, deltaTime, [165, 13, 32]);
+            updateWaypoints(parentNode, traceNode.current, "route");
             traceNode.current = parentNode ?? traceNode.current;
             setAnimationEnded(time >= timer.current && parentNode == null);
         }
 
+        // Animation progress
         if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
-            setTime(prevTime => (prevTime + deltaTime));
+            setTime(prevTime => (prevTime + deltaTime * settings.speed));
         }
 
+        // Playback progress
         if(previousTimeRef.current != null && animationEnded && playbackOn) {
+            const deltaTime = newTime - previousTimeRef.current;
             if(time >= timer.current) {
                 setPlaybackOn(false);
             }
-            setTime(prevTime => (prevTime + deltaTime));
+            setTime(prevTime => (prevTime + deltaTime * settings.speed));
         }
 
         previousTimeRef.current = newTime;
         requestRef.current = requestAnimationFrame(animate);
     }
 
-    function updateWaypoints(node, refererNode, deltaTime, color = undefined) {
+    function updateWaypoints(node, refererNode, color = "path") {
         if(!node || !refererNode) return;
         const distance = Math.hypot(node.longitude - refererNode.longitude, node.latitude - refererNode.latitude);
-        const timeAdd = distance * (Math.log(deltaTime) * 26000);
+        const timeAdd = distance * 50000;
 
         waypoints.current = [...waypoints.current,
             { waypoints: [
@@ -179,14 +187,10 @@ function Map() {
                         getPath={d => d.waypoints.map(p => p.coordinates)}
                         getTimestamps={d => d.waypoints.map(p => p.timestamp)}
                         getColor={(d) => {
-                            if(d.color) return d.color;
+                            if(d.color !== "path") return rgbToArray(colors[d.color]);
+                            const color = rgbToArray(colors[d.color]);
                             const delta = Math.abs(time - d.timestamp);
-                            const color = [
-                                Math.max((70 * 1.55) - delta * 0.1, 70),
-                                Math.max((183 * 1.6) - delta * 0.1, 183),
-                                Math.max((128 * 1.75) - delta * 0.1, 128),
-                            ];
-                            return color;
+                            return color.map(c => Math.max((c * 1.6) - delta * 0.1, c));
                         }}
                         opacity={1}
                         widthMinPixels={3}
@@ -195,14 +199,14 @@ function Map() {
                         trailLength={6000}
                         currentTime={time}
                         updateTriggers={{
-                            getColor: [time]
+                            getColor: [time, colors.path, colors.route]
                         }}
                     />
                     <ScatterplotLayer 
                         id="start-end-points"
                         data={[
-                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: [70, 183, 128], lineColor: [255, 255, 255] }] : []),
-                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: [152, 4, 12], lineColor: [0, 0, 0] }] : []),
+                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: rgbToArray(colors.startNodeFill), lineColor: rgbToArray(colors.startNodeBorder) }] : []),
+                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: rgbToArray(colors.endNodeFill), lineColor: rgbToArray(colors.endNodeBorder) }] : []),
                         ]}
                         pickable={true}
                         opacity={1}
@@ -236,6 +240,10 @@ function Map() {
                 clearPath={clearPath}
                 timeChanged={setTime}
                 maxTime={timer.current}
+                settings={settings}
+                setSettings={setSettings}
+                colors={colors}
+                setColors={setColors}
             />
         </>
     );

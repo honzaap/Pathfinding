@@ -9,3 +9,12 @@ export const INITIAL_VIEW_STATE = {
     pitch: 0,
     bearing: 0
 };
+
+export const INITIAL_COLORS = {
+    startNodeFill: "rgb(70, 183, 128)",
+    startNodeBorder: "rgb(255, 255, 255)",
+    endNodeFill: "rgb(152, 4, 12)",
+    endNodeBorder: "rgb(0, 0, 0)",
+    path: "rgb(70, 183, 128)",
+    route: "rgb(165, 13, 32)",
+};
