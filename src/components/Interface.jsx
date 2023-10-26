@@ -2,21 +2,28 @@ import { Button, IconButton, Typography, Snackbar, Alert, CircularProgress, Fade
 import { MuiColorInput } from "mui-color-input";
 import { PlayArrow, Settings, Movie, Pause, Replay } from "@mui/icons-material";
 import Slider from "./Slider";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { INITIAL_COLORS } from "../config";
 
-function Interface({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, timeChanged, setSettings, setColors, startPathfinding, toggleAnimation, clearPath }) {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, setSettings, setColors, startPathfinding, toggleAnimation, clearPath }, ref) => {
     const [sidebar, setSidebar] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [snackOpen, setSnackOpen] = useState(false);
+    const [snack, setSnack] = useState({
+        open: false,
+        message: "",
+        type: "error",
+    });
     const [menuAnchor, setMenuAnchor] = useState(null);
     const menuOpen = Boolean(menuAnchor);
     const timerRef = useRef();
 
+    useImperativeHandle(ref, () => ({
+        showSnack(message, type = "error") {
+            setSnack({ open: true, message, type });
+        },
+    }));
+      
     function closeSnack() {
-        setSnackOpen(false);
+        setSnack({...snack, open: false});
     }
 
     function handlePlay() {
@@ -34,13 +41,6 @@ function Interface({ canStart, started, animationEnded, playbackOn, time, maxTim
 
     useEffect(() => {
         clearTimeout(timerRef.current);
-        setSnackOpen(true);
-        
-        setLoading(true);
-
-        setTimeout(() => {
-            setLoading(false);
-        }, 2000);
     }, []);
 
     return (
@@ -80,7 +80,7 @@ function Interface({ canStart, started, animationEnded, playbackOn, time, maxTim
                 <Fade
                     in={loading}
                     style={{
-                        transitionDelay: loading ? "800ms" : "0ms",
+                        transitionDelay: loading ? "50ms" : "0ms",
                     }}
                     unmountOnExit
                 >
@@ -90,16 +90,15 @@ function Interface({ canStart, started, animationEnded, playbackOn, time, maxTim
 
             <Snackbar 
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }} 
-                open={snackOpen} 
+                open={snack.open} 
                 autoHideDuration={4000} 
                 onClose={closeSnack}>
                 <Alert 
                     onClose={closeSnack} 
-                    severity="error" 
-                    variant="filled"
-                    style={{ width: "100%", backgroundColor: "#7E272C", color: "#fff" }}
+                    severity={snack.type} 
+                    style={{ width: "100%", color: "#fff" }}
                 >
-                    Lorem ipsum dolor sit amet.
+                    {snack.message}
                 </Alert>
             </Snackbar>
 
@@ -289,6 +288,8 @@ function Interface({ canStart, started, animationEnded, playbackOn, time, maxTim
             </Drawer>
         </>
     );
-}
+});
+
+Interface.displayName = "Interface";
 
 export default Interface;

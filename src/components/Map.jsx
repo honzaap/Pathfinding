@@ -15,19 +15,21 @@ import useSmoothStateChange from "../hooks/useSmoothStateChange";
 function Map() {
     const [startNode, setStartNode] = useState(null);
     const [endNode, setEndNode] = useState(null);
-    const [selectionRadius, setSelectionRadius] = useState([]);
-    const [tripsData, setTripsData] = useState([]);
-    const [started, setStarted] = useState();
-    const [time, setTime] = useState(0);
-    const [animationEnded, setAnimationEnded] = useState(false);
-    const [playbackOn, setPlaybackOn] = useState(false);
-    const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false);
+    const [selectionRadius, setSelectionRadius] = useState([]); // TODO : animation group
+    const [tripsData, setTripsData] = useState([]); // TODO : animation group
+    const [started, setStarted] = useState(); // TODO : animation group
+    const [time, setTime] = useState(0); // TODO : animation group
+    const [animationEnded, setAnimationEnded] = useState(false); // TODO : animation group
+    const [playbackOn, setPlaybackOn] = useState(false); // TODO : animation group
+    const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
+    const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({
         algorithm: "astar",
         radius: 2,
         speed: 1, 
     });
     const [colors, setColors] = useState(INITIAL_COLORS);
+    const ui = useRef();
     const fadeRadius = useRef();
     const requestRef = useRef();
     const previousTimeRef = useRef();
@@ -39,26 +41,45 @@ function Map() {
 
     async function mapClick(e, info) {
         if(started && !animationEnded) return;
+
         setFadeRadiusReverse(false);
         fadeRadius.current = true;
         clearPath();
+
         if(info.rightButton) {
             if(e.layer?.id !== "selection-radius") {
-                console.log("You need to pick a point in the highlighted radius"); // TODO
+                ui.current.showSnack("Please select a point inside the radius.", "info");
                 return;
             }
+
+            if(loading) {
+                ui.current.showSnack("Please wait for all data to load.", "info");
+                return;
+            }
+
+            const loadingHandle = setTimeout(() => {
+                setLoading(true);
+            }, 300);
             
             const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
             const realEndNode = state.current.getNode(node.id);
             setEndNode(node);
             
+            clearTimeout(loadingHandle);
+            setLoading(false);
+
             if(!realEndNode) {
-                throw new Error("Somehow the end node isn't in bounds");
+                ui.current.showSnack("An error occurred. Please try again.");
+                return;
             }
             state.current.endNode = realEndNode;
             
             return;
         }
+
+        const loadingHandle = setTimeout(() => {
+            setLoading(true);
+        }, 300);
 
         const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
         setStartNode(node);
@@ -69,6 +90,8 @@ function Map() {
         getMapGraph(getBoundingBoxFromPolygon(circle), node.id).then(graph => {
             state.current.graph = graph;
             clearPath();
+            clearTimeout(loadingHandle);
+            setLoading(false);
         });
     }
 
@@ -230,6 +253,7 @@ function Map() {
                 </DeckGL>
             </div>
             <Interface 
+                ref={ui}
                 canStart={!startNode || !endNode}
                 started={started}
                 animationEnded={animationEnded}
@@ -244,6 +268,7 @@ function Map() {
                 setSettings={setSettings}
                 colors={colors}
                 setColors={setColors}
+                loading={loading}
             />
         </>
     );
