@@ -4,17 +4,18 @@ import maplibregl from "maplibre-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { PolygonLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { TripsLayer } from "@deck.gl/geo-layers";
-import { createGeoJSONCircle, rgbToArray } from "../helpers";
+import { createGeoJSONCircle } from "../helpers";
 import { useEffect, useRef, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
 import Interface from "./Interface";
-import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
+import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE, STEPS_PER_FRAME } from "../config";
 import useSmoothStateChange from "../hooks/useSmoothStateChange";
 
 function Map() {
     const [startNode, setStartNode] = useState(null);
     const [endNode, setEndNode] = useState(null);
+    const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
     const [selectionRadius, setSelectionRadius] = useState([]); // TODO : animation group
     const [tripsData, setTripsData] = useState([]); // TODO : animation group
     const [started, setStarted] = useState(); // TODO : animation group
@@ -82,6 +83,13 @@ function Map() {
         }, 300);
 
         const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
+        if(!node) {
+            ui.current.showSnack("No path was found in the vicinity, please try another location.");
+            clearTimeout(loadingHandle);
+            setLoading(false);
+            return;
+        }
+
         setStartNode(node);
         setEndNode(null);
         const circle = createGeoJSONCircle([node.lon, node.lat], settings.radius);
@@ -131,11 +139,12 @@ function Map() {
         setAnimationEnded(false);
     }
 
-    function animate(newTime) {
+    function animateStep(newTime) {
         for(const updatedNode of state.current.nextStep()) {
             updateWaypoints(updatedNode, updatedNode.referer);
         }
 
+        // Found end but waiting for animation to end
         if(state.current.finished && !animationEnded) {
             if(!traceNode.current) traceNode.current = state.current.endNode;
             const parentNode = traceNode.current.parent;
@@ -147,7 +156,7 @@ function Map() {
         // Animation progress
         if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
-            setTime(prevTime => (prevTime + deltaTime * settings.speed));
+            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2));
         }
 
         // Playback progress
@@ -156,7 +165,13 @@ function Map() {
             if(time >= timer.current) {
                 setPlaybackOn(false);
             }
-            setTime(prevTime => (prevTime + deltaTime * settings.speed));
+            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2));
+        }
+    }
+
+    function animate(newTime) {
+        for(let i = 0; i < STEPS_PER_FRAME; i++) {
+            animateStep(newTime);
         }
 
         previousTimeRef.current = newTime;
@@ -169,10 +184,11 @@ function Map() {
         const timeAdd = distance * 50000;
 
         waypoints.current = [...waypoints.current,
-            { waypoints: [
-                { coordinates: [refererNode.longitude, refererNode.latitude], timestamp: timer.current },
-                { coordinates: [node.longitude, node.latitude], timestamp: timer.current + timeAdd },
-            ], color, timestamp: timer.current + timeAdd}
+            { 
+                path: [[refererNode.longitude, refererNode.latitude], [node.longitude, node.latitude]],
+                timestamps: [timer.current, timer.current + timeAdd],
+                color, timestamp: timer.current + timeAdd
+            }
         ];
 
         timer.current += timeAdd;
@@ -185,12 +201,17 @@ function Map() {
         return () => cancelAnimationFrame(requestRef.current);
     }, [started, time, animationEnded, playbackOn]);
 
+    function changeLocation(location) {
+        setViewState({...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13});
+    }
+
     return (
         <>
             <div onContextMenu={(e) => { e.preventDefault(); }}>
                 <DeckGL
-                    initialViewState={INITIAL_VIEW_STATE}
+                    viewState={viewState}
                     controller={{ doubleClickZoom: false }}
+                    onViewStateChange={e => setViewState(e.viewState)}
                     onClick={mapClick}
                 >
                     <PolygonLayer 
@@ -207,29 +228,28 @@ function Map() {
                     <TripsLayer
                         id={"pathfinding-layer"}
                         data={tripsData}
-                        getPath={d => d.waypoints.map(p => p.coordinates)}
-                        getTimestamps={d => d.waypoints.map(p => p.timestamp)}
-                        getColor={(d) => {
-                            if(d.color !== "path") return rgbToArray(colors[d.color]);
-                            const color = rgbToArray(colors[d.color]);
-                            const delta = Math.abs(time - d.timestamp);
-                            return color.map(c => Math.max((c * 1.6) - delta * 0.1, c));
-                        }}
                         opacity={1}
                         widthMinPixels={3}
                         widthMaxPixels={5}
                         fadeTrail={false}
-                        trailLength={6000}
                         currentTime={time}
-                        updateTriggers={{
-                            getColor: [time, colors.path, colors.route]
-                        }}
+                        getColor={d => colors[d.color]}
+                        /** Create a nice glowy effect that absolutely kills the performance  */
+                        // getColor={(d) => {
+                        //     if(d.color !== "path") return colors[d.color];
+                        //     const color = colors[d.color];
+                        //     const delta = Math.abs(time - d.timestamp);
+                        //     return color.map(c => Math.max((c * 1.6) - delta * 0.1, c));
+                        // }}
+                        // updateTriggers={{
+                        // getColor: [time, colors.path, colors.route]
+                        // }}
                     />
                     <ScatterplotLayer 
                         id="start-end-points"
                         data={[
-                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: rgbToArray(colors.startNodeFill), lineColor: rgbToArray(colors.startNodeBorder) }] : []),
-                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: rgbToArray(colors.endNodeFill), lineColor: rgbToArray(colors.endNodeBorder) }] : []),
+                            ...(startNode ? [{ coordinates: [startNode.lon, startNode.lat], color: colors.startNodeFill, lineColor: colors.startNodeBorder }] : []),
+                            ...(endNode ? [{ coordinates: [endNode.lon, endNode.lat], color: colors.endNodeFill, lineColor: colors.endNodeBorder }] : []),
                         ]}
                         pickable={true}
                         opacity={1}
@@ -263,6 +283,7 @@ function Map() {
                 toggleAnimation={toggleAnimation}
                 clearPath={clearPath}
                 timeChanged={setTime}
+                changeLocation={changeLocation}
                 maxTime={timer.current}
                 settings={settings}
                 setSettings={setSettings}

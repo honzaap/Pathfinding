@@ -36,6 +36,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 32px;
+    pointer-events: none;
 
     .side {
         width: 240px;
@@ -44,6 +45,10 @@ body {
     .slider-container {
         display: flex;
         flex-direction: column;
+    }
+
+    input, button, a {
+        pointer-events: all;
     }
 }
 

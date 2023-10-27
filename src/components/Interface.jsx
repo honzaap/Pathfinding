@@ -3,9 +3,10 @@ import { MuiColorInput } from "mui-color-input";
 import { PlayArrow, Settings, Movie, Pause, Replay } from "@mui/icons-material";
 import Slider from "./Slider";
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
-import { INITIAL_COLORS } from "../config";
+import { INITIAL_COLORS, LOCATIONS } from "../config";
+import { arrayToRgb, rgbToArray } from "../helpers";
 
-const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, setSettings, setColors, startPathfinding, toggleAnimation, clearPath }, ref) => {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
     const [sidebar, setSidebar] = useState(false);
     const [snack, setSnack] = useState({
         open: false,
@@ -157,9 +158,12 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 horizontal: "right",
                             }}
                         >
-                            <MenuItem  onClick={closeMenu}>New York</MenuItem>
-                            <MenuItem  onClick={closeMenu}>Prague</MenuItem>
-                            <MenuItem  onClick={closeMenu}>Jablonec nad Nisou</MenuItem>
+                            {LOCATIONS.map(location => 
+                                <MenuItem key={location.name} onClick={() => {
+                                    closeMenu();
+                                    changeLocation(location);
+                                }}>{location.name}</MenuItem>
+                            )}
                         </Menu>
                     </div>
 
@@ -198,7 +202,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 Start node fill color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.startNodeFill} onChange={v => {setColors({...colors, startNodeFill: v});}} aria-labelledby="start-fill-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.startNodeFill)} onChange={v => {setColors({...colors, startNodeFill: rgbToArray(v)});}} aria-labelledby="start-fill-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, startNodeFill: INITIAL_COLORS.startNodeFill});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
@@ -210,7 +214,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 Start node border color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.startNodeBorder} onChange={v => {setColors({...colors, startNodeBorder: v});}} aria-labelledby="start-border-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.startNodeBorder)} onChange={v => {setColors({...colors, startNodeBorder: rgbToArray(v)});}} aria-labelledby="start-border-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, startNodeBorder: INITIAL_COLORS.startNodeBorder});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
@@ -222,7 +226,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 End node fill color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.endNodeFill} onChange={v => {setColors({...colors, endNodeFill: v});}} aria-labelledby="end-fill-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.endNodeFill)} onChange={v => {setColors({...colors, endNodeFill: rgbToArray(v)});}} aria-labelledby="end-fill-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, endNodeFill: INITIAL_COLORS.endNodeFill});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
@@ -234,7 +238,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 End node border color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.endNodeBorder} onChange={v => {setColors({...colors, endNodeBorder: v});}} aria-labelledby="end-border-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.endNodeBorder)} onChange={v => {setColors({...colors, endNodeBorder: rgbToArray(v)});}} aria-labelledby="end-border-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, endNodeBorder: INITIAL_COLORS.endNodeBorder});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
@@ -246,7 +250,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 Path color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.path} onChange={v => {setColors({...colors, path: v});}} aria-labelledby="path-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.path)} onChange={v => {setColors({...colors, path: rgbToArray(v)});}} aria-labelledby="path-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, path: INITIAL_COLORS.path});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
@@ -258,7 +262,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                                 Shortest route color
                             </Typography>
                             <div className="color-container">
-                                <MuiColorInput value={colors.route} onChange={v => {setColors({...colors, route: v});}} aria-labelledby="route-label" style={{ backgroundColor: "#404156" }} />
+                                <MuiColorInput value={arrayToRgb(colors.route)} onChange={v => {setColors({...colors, route: rgbToArray(v)});}} aria-labelledby="route-label" style={{ backgroundColor: "#404156" }} />
                                 <IconButton onClick={() => {setColors({...colors, route: INITIAL_COLORS.route});}} style={{ backgroundColor: "transparent" }} size="small">
                                     <Replay style={{ color: "#fff", width: 20, height: 20 }} fontSize="inherit" />
                                 </IconButton>
