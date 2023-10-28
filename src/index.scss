@@ -200,7 +200,12 @@ body {
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border: 1px solid #fff;
-    background-color: rgba(#000, 0.3);
+    border: 2px solid rgba(#fff, 0.6);
+    background-color: rgba(#000, 0.25);
     border-radius: 8px;
+    color: #e8e8e8;
+
+    b {
+        color: #fff;
+    }
 }

@@ -22,6 +22,7 @@ function Map() {
     const [time, setTime] = useState(0); // TODO : animation group
     const [animationEnded, setAnimationEnded] = useState(false); // TODO : animation group
     const [playbackOn, setPlaybackOn] = useState(false); // TODO : animation group
+    const [playbackDirection, setPlaybackDirection] = useState(1); // TODO : animation group
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
     const [cinematic, setCinematic] = useState(false); // TODO : animation group
     const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ function Map() {
         fadeRadius.current = true;
         clearPath();
 
+        // Place end node
         if(info.rightButton) {
             if(e.layer?.id !== "selection-radius") {
                 ui.current.showSnack("Please select a point inside the radius.", "info");
@@ -79,6 +81,7 @@ function Map() {
             setLoading(true);
         }, 300);
 
+        // Fectch nearest node
         const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
         if(!node) {
             ui.current.showSnack("No path was found in the vicinity, please try another location.");
@@ -92,6 +95,7 @@ function Map() {
         const circle = createGeoJSONCircle([node.lon, node.lat], settings.radius);
         setSelectionRadius([{ contour: circle}]);
         
+        // Fetch nodes inside the radius
         getMapGraph(getBoundingBoxFromPolygon(circle), node.id).then(graph => {
             state.current.graph = graph;
             clearPath();
@@ -100,6 +104,7 @@ function Map() {
         });
     }
 
+    // Start new pathfinding animation
     function startPathfinding() {
         setFadeRadiusReverse(true);
         setTimeout(() => {
@@ -109,9 +114,12 @@ function Map() {
         }, 400);
     }
 
-    function toggleAnimation() {
+    // Start or pause already running animation
+    function toggleAnimation(loop = true, direction = 1) {
+        if(time === 0 && !animationEnded) return;
+        setPlaybackDirection(direction);
         if(animationEnded) {
-            if(time >= timer.current) {
+            if(loop && time >= timer.current) {
                 setTime(0);
             }
             setStarted(true);
@@ -153,16 +161,16 @@ function Map() {
         // Animation progress
         if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
-            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2));
+            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2 * playbackDirection));
         }
 
         // Playback progress
         if(previousTimeRef.current != null && animationEnded && playbackOn) {
             const deltaTime = newTime - previousTimeRef.current;
-            if(time >= timer.current) {
+            if(time >= timer.current && playbackDirection !== -1) {
                 setPlaybackOn(false);
             }
-            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2));
+            setTime(prevTime => (Math.min(prevTime + deltaTime * settings.speed * 2 * playbackDirection, timer.current)));
         }
     }
 
@@ -208,12 +216,6 @@ function Map() {
         localStorage.setItem("path_settings", JSON.stringify(items));
     }
 
-    window.onkeydown = e => {
-        if(e.key === "Escape") {
-            setCinematic(false);
-        }
-    };
-
     useEffect(() => {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
@@ -234,7 +236,7 @@ function Map() {
             <div onContextMenu={(e) => { e.preventDefault(); }}>
                 <DeckGL
                     viewState={viewState}
-                    controller={{ doubleClickZoom: false }}
+                    controller={{ doubleClickZoom: false, keyboard: false }}
                     onViewStateChange={e => setViewState(e.viewState)}
                     onClick={mapClick}
                 >
@@ -298,7 +300,7 @@ function Map() {
             </div>
             <Interface 
                 ref={ui}
-                canStart={!startNode || !endNode}
+                canStart={startNode && endNode}
                 started={started}
                 animationEnded={animationEnded}
                 playbackOn={playbackOn}

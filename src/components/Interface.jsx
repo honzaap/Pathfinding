@@ -17,6 +17,8 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
     const [menuAnchor, setMenuAnchor] = useState(null);
     const menuOpen = Boolean(menuAnchor);
     const helperTime = useRef(4800);
+    const rightDown = useRef(false);
+    const leftDown = useRef(false);
 
     // Expose showSnack to parent from ref
     useImperativeHandle(ref, () => ({
@@ -35,6 +37,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
 
     // Start pathfinding or toggle playback
     function handlePlay() {
+        if(!canStart) return;
         if(!started && time === 0) {
             startPathfinding();
             return;
@@ -45,6 +48,31 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
     function closeMenu() {
         setMenuAnchor(null);
     }
+
+    window.onkeydown = e => {
+        if(e.code === "ArrowRight" && !rightDown.current && !leftDown.current && (!started || animationEnded)) {
+            rightDown.current = true;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "ArrowLeft" && !leftDown.current && !rightDown.current && animationEnded) {
+            leftDown.current = true;
+            toggleAnimation(false, -1);
+        }
+    };
+
+    window.onkeyup = e => {
+        if(e.code === "Escape") setCinematic(false);
+        else if(e.code === "Space") handlePlay();
+        else if(e.code === "ArrowRight" && rightDown.current) {
+            rightDown.current = false;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "ArrowLeft" && animationEnded && leftDown.current) {
+            leftDown.current = false;
+            toggleAnimation(false, 1);
+        }
+        else if(e.code === "KeyR" && (animationEnded || !started)) clearPath();
+    };
 
     // Show cinematic mode helper
     useEffect(() => {
@@ -64,7 +92,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                     </Typography>
                     <Slider disabled={!animationEnded}  value={animationEnded ? time : maxTime} min={animationEnded ? 0 : -1} max={maxTime} onChange={(e) => {timeChanged(Number(e.target.value));}} className="slider" aria-labelledby="playback-slider" />
                 </div>
-                <IconButton disabled={canStart} onClick={handlePlay} style={{ backgroundColor: "#46B780", width: 60, height: 60 }} size="large">
+                <IconButton disabled={!canStart} onClick={handlePlay} style={{ backgroundColor: "#46B780", width: 60, height: 60 }} size="large">
                     {(!started || animationEnded && !playbackOn) 
                         ? <PlayArrow style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
                         : <Pause style={{ color: "#fff", width: 26, height: 26 }} fontSize="inherit" />
@@ -121,7 +149,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                 onClose={closeHelper}
             >
                 <div className="cinematic-alert">
-                    <Typography fontSize="18px" fontWeight="bold">Cinematic mode</Typography>
+                    <Typography fontSize="18px"><b>Cinematic mode</b></Typography>
                     <Typography>Use keyboard shortcuts to control animation</Typography>
                     <Typography>Press <b>Escape</b> to exit</Typography>
                 </div>
