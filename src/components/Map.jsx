@@ -24,11 +24,7 @@ function Map() {
     const [playbackOn, setPlaybackOn] = useState(false); // TODO : animation group
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
     const [loading, setLoading] = useState(false);
-    const [settings, setSettings] = useState({
-        algorithm: "astar",
-        radius: 2,
-        speed: 1, 
-    });
+    const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 1 });
     const [colors, setColors] = useState(INITIAL_COLORS);
     const ui = useRef();
     const fadeRadius = useRef();
@@ -195,15 +191,36 @@ function Map() {
         setTripsData(() => waypoints.current);
     }
 
+    function changeLocation(location) {
+        setViewState({...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13});
+    }
+
+    function changeSettings(newSettings) {
+        setSettings(newSettings);
+        const items = { settings: newSettings, colors };
+        localStorage.setItem("path_settings", JSON.stringify(items));
+    }
+
+    function changeColors(newColors) {
+        setColors(newColors);
+        const items = { settings, colors: newColors };
+        localStorage.setItem("path_settings", JSON.stringify(items));
+    }
+
     useEffect(() => {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
         return () => cancelAnimationFrame(requestRef.current);
     }, [started, time, animationEnded, playbackOn]);
 
-    function changeLocation(location) {
-        setViewState({...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13});
-    }
+    useEffect(() => {
+        const settings = localStorage.getItem("path_settings");
+        if(!settings) return;
+        const items = JSON.parse(settings);
+
+        setSettings(items.settings);
+        setColors(items.colors);
+    }, []);
 
     return (
         <>
@@ -241,9 +258,9 @@ function Map() {
                         //     const delta = Math.abs(time - d.timestamp);
                         //     return color.map(c => Math.max((c * 1.6) - delta * 0.1, c));
                         // }}
-                        // updateTriggers={{
-                        // getColor: [time, colors.path, colors.route]
-                        // }}
+                        updateTriggers={{
+                            getColor: [colors.path, colors.route]
+                        }}
                     />
                     <ScatterplotLayer 
                         id="start-end-points"
@@ -286,9 +303,9 @@ function Map() {
                 changeLocation={changeLocation}
                 maxTime={timer.current}
                 settings={settings}
-                setSettings={setSettings}
+                setSettings={changeSettings}
                 colors={colors}
-                setColors={setColors}
+                setColors={changeColors}
                 loading={loading}
             />
         </>

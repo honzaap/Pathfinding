@@ -34,7 +34,6 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
         }
         toggleAnimation();
     }
-
     
     function closeMenu() {
         setMenuAnchor(null);

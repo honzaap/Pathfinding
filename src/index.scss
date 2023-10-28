@@ -43,6 +43,7 @@ body {
     }
 
     .slider-container {
+        pointer-events: all;
         display: flex;
         flex-direction: column;
     }
