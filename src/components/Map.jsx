@@ -23,6 +23,7 @@ function Map() {
     const [animationEnded, setAnimationEnded] = useState(false); // TODO : animation group
     const [playbackOn, setPlaybackOn] = useState(false); // TODO : animation group
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
+    const [cinematic, setCinematic] = useState(false); // TODO : animation group
     const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 1 });
     const [colors, setColors] = useState(INITIAL_COLORS);
@@ -207,6 +208,12 @@ function Map() {
         localStorage.setItem("path_settings", JSON.stringify(items));
     }
 
+    window.onkeydown = e => {
+        if(e.key === "Escape") {
+            setCinematic(false);
+        }
+    };
+
     useEffect(() => {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
@@ -307,6 +314,8 @@ function Map() {
                 colors={colors}
                 setColors={changeColors}
                 loading={loading}
+                cinematic={cinematic}
+                setCinematic={setCinematic}
             />
         </>
     );

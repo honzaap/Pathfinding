@@ -6,17 +6,19 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "re
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
-const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
     const [sidebar, setSidebar] = useState(false);
     const [snack, setSnack] = useState({
         open: false,
         message: "",
         type: "error",
     });
+    const [helper, setHelper] = useState(false);
     const [menuAnchor, setMenuAnchor] = useState(null);
     const menuOpen = Boolean(menuAnchor);
-    const timerRef = useRef();
+    const helperTime = useRef(4800);
 
+    // Expose showSnack to parent from ref
     useImperativeHandle(ref, () => ({
         showSnack(message, type = "error") {
             setSnack({ open: true, message, type });
@@ -27,6 +29,11 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
         setSnack({...snack, open: false});
     }
 
+    function closeHelper() {
+        setHelper(false);
+    }
+
+    // Start pathfinding or toggle playback
     function handlePlay() {
         if(!started && time === 0) {
             startPathfinding();
@@ -39,13 +46,18 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
         setMenuAnchor(null);
     }
 
+    // Show cinematic mode helper
     useEffect(() => {
-        clearTimeout(timerRef.current);
-    }, []);
+        if(!cinematic) return;
+        setHelper(true);
+        setTimeout(() => {
+            helperTime.current = 2500;
+        }, 200);
+    }, [cinematic]);
 
     return (
         <>
-            <div className="nav-top">
+            <div className={`nav-top ${cinematic ? "cinematic" : ""}`}>
                 <div className="side slider-container">
                     <Typography id="playback-slider" gutterBottom>
                         Animation playback
@@ -63,14 +75,14 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                 </div>
             </div>
 
-            <div className="nav-right">
+            <div className={`nav-right ${cinematic ? "cinematic" : ""}`}>
                 <Tooltip title="Open settings">
                     <IconButton onClick={() => {setSidebar(true);}} style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
                         <Settings style={{ color: "#fff", width: 24, height: 24 }} fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Cinematic mode">
-                    <IconButton style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
+                    <IconButton onClick={() => {setCinematic(!cinematic);}} style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
                         <Movie style={{ color: "#fff", width: 24, height: 24 }} fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
@@ -102,7 +114,21 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                 </Alert>
             </Snackbar>
 
+            <Snackbar 
+                anchorOrigin={{ vertical: "top", horizontal: "center" }} 
+                open={helper} 
+                autoHideDuration={helperTime.current} 
+                onClose={closeHelper}
+            >
+                <div className="cinematic-alert">
+                    <Typography fontSize="18px" fontWeight="bold">Cinematic mode</Typography>
+                    <Typography>Use keyboard shortcuts to control animation</Typography>
+                    <Typography>Press <b>Escape</b> to exit</Typography>
+                </div>
+            </Snackbar>
+
             <Drawer
+                className={`side-drawer ${cinematic ? "cinematic" : ""}`}
                 anchor="left"
                 open={sidebar}
                 onClose={() => {setSidebar(false);}}
@@ -289,6 +315,12 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                     </div>
                 </div>
             </Drawer>
+
+            <a href="https://github.com/honzaap/Pathfinding" aria-label="GitHub repository" target="_blank" className={`github-corner ${cinematic ? "cinematic" : ""}`}>
+                <svg width="60" height="60" viewBox="0 0 250 250">
+                    <path fill="#2A2B37" d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" className="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" className="octo-body"></path>
+                </svg>
+            </a>
         </>
     );
 });
