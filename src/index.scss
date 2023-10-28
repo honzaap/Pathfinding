@@ -111,7 +111,7 @@ body {
     padding: 25px;
     background: linear-gradient(180deg, #2A2B37 0%, #1F2029 100%);
     box-shadow: 7px 0px 20px 0px rgba(0, 0, 0, 0.25);
-    gap: 25px;
+    gap: 20px;
     flex-basis: 100%;
 
     button {
@@ -141,13 +141,13 @@ body {
 .styles-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
 .shortcuts-container {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 4px;
 
     .shortcut {
         font-size: 14px;
@@ -207,5 +207,57 @@ body {
 
     b {
         color: #fff;
+    }
+}
+
+.tutorial-container {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(#000, 0.5);
+    padding: 20px 25px;
+    width: 1000px;
+    max-width: 60vw;
+    min-height: 800px;
+    border: 2px solid rgba(#000, 0.3);
+    border-radius: 10px;
+
+    .MuiStepper-root {
+        .MuiSvgIcon-root {
+            color: #46B780;
+        }
+    }
+
+    .controls {
+        flex-grow: 1;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+
+        .close {
+            margin-right: auto;
+        }
+    }
+
+    .content {
+        width: 90%;
+        margin-inline: auto;
+    }
+
+    .video {
+        width: 100%;
+        height: auto;
+        margin-inline: auto;
+        display: block;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    p {
+        margin-top: 0;
+        margin-bottom: 8px;
     }
 }

@@ -170,7 +170,7 @@ function Map() {
             if(time >= timer.current && playbackDirection !== -1) {
                 setPlaybackOn(false);
             }
-            setTime(prevTime => (Math.min(prevTime + deltaTime * settings.speed * 2 * playbackDirection, timer.current)));
+            setTime(prevTime => (Math.max(Math.min(prevTime + deltaTime * settings.speed * 2 * playbackDirection, timer.current), 0)));
         }
     }
 
