@@ -25,6 +25,7 @@ function Map() {
     const [playbackDirection, setPlaybackDirection] = useState(1); // TODO : animation group
     const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
     const [cinematic, setCinematic] = useState(false); // TODO : animation group
+    const [placeEnd, setPlaceEnd] = useState(false); // TODO : animation group
     const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 1 });
     const [colors, setColors] = useState(INITIAL_COLORS);
@@ -46,7 +47,7 @@ function Map() {
         clearPath();
 
         // Place end node
-        if(info.rightButton) {
+        if(info.rightButton || placeEnd) {
             if(e.layer?.id !== "selection-radius") {
                 ui.current.showSnack("Please select a point inside the radius.", "info");
                 return;
@@ -318,6 +319,8 @@ function Map() {
                 loading={loading}
                 cinematic={cinematic}
                 setCinematic={setCinematic}
+                placeEnd={placeEnd}
+                setPlaceEnd={setPlaceEnd}
             />
         </>
     );

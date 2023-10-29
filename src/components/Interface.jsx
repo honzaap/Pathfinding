@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "re
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
-const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
     const [sidebar, setSidebar] = useState(false);
     const [snack, setSnack] = useState({
         open: false,
@@ -73,7 +73,10 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
 
     window.onkeyup = e => {
         if(e.code === "Escape") setCinematic(false);
-        else if(e.code === "Space") handlePlay();
+        else if(e.code === "Space") {
+            e.preventDefault();
+            handlePlay();
+        }
         else if(e.code === "ArrowRight" && rightDown.current) {
             rightDown.current = false;
             toggleAnimation(false, 1);
@@ -127,7 +130,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                     </IconButton>
                 </Tooltip>
                 <Tooltip title="Cinematic mode">
-                    <IconButton onClick={() => {setCinematic(!cinematic);}} style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
+                    <IconButton className="btn-cinematic" onClick={() => {setCinematic(!cinematic);}} style={{ backgroundColor: "#2A2B37", width: 36, height: 36 }} size="large">
                         <Movie style={{ color: "#fff", width: 24, height: 24 }} fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
@@ -171,6 +174,12 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                     <Typography>Press <b>Escape</b> to exit</Typography>
                 </div>
             </Snackbar>
+
+            <div className="mobile-controls">
+                <Button onClick={() => {setPlaceEnd(!placeEnd);}} style={{ color: "#fff", backgroundColor: "#404156", paddingInline: 30, paddingBlock: 7 }} variant="contained">
+                    {placeEnd ? "Place start node" : "Place end node"}
+                </Button>
+            </div>
 
             <Backdrop
                 open={showTutorial}
@@ -329,7 +338,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         <Typography id="speed-slider" >
                             Animation speed
                         </Typography>
-                        <Slider min={0.5} max={3.0} step={0.1} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
+                        <Slider min={0.2} max={3.0} step={0.1} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
                     </div>
 
                     <div className="styles-container">
