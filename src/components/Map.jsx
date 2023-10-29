@@ -145,6 +145,7 @@ function Map() {
         setAnimationEnded(false);
     }
 
+    // Progress animation by one step
     function animateStep(newTime) {
         for(const updatedNode of state.current.nextStep()) {
             updateWaypoints(updatedNode, updatedNode.referer);
@@ -175,6 +176,7 @@ function Map() {
         }
     }
 
+    // Animation callback
     function animate(newTime) {
         for(let i = 0; i < STEPS_PER_FRAME; i++) {
             animateStep(newTime);
@@ -184,6 +186,7 @@ function Map() {
         requestRef.current = requestAnimationFrame(animate);
     }
 
+    // Add new node to the waypoitns property and increment timer
     function updateWaypoints(node, refererNode, color = "path") {
         if(!node || !refererNode) return;
         const distance = Math.hypot(node.longitude - refererNode.longitude, node.latitude - refererNode.latitude);

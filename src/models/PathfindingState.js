@@ -22,10 +22,18 @@ export default class PathfindingState {
         return this.graph.startNode;
     }
 
+    /**
+     * 
+     * @param {Number} id OSM node id
+     * @returns {import("./Node").default} node
+     */
     getNode(id) {
         return this.graph?.getNode(id);
     }
 
+    /**
+     * Resets to default state
+     */
     reset() {
         this.openList = [];
         this.closedList = [];
@@ -36,6 +44,9 @@ export default class PathfindingState {
         }
     }
 
+    /**
+     * Resets state and initializes new pathfinding animation
+     */
     start() {
         this.reset();
         this.openList = [this.startNode];
@@ -43,6 +54,10 @@ export default class PathfindingState {
         this.startNode.h = 0;
     }
 
+    /**
+     * Progresses the pathfinding algorithm by one step/iteration
+     * @returns {(import("./Node").default)[]} array of nodes that were updated
+     */
     nextStep() {
         if(this.openList.length === 0) {
             this.finished = true;

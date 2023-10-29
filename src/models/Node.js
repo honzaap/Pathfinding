@@ -1,5 +1,11 @@
 import Edge from "./Edge";
 
+/**
+ * @typedef {Object} NodeNeighbor
+ * @property {Node} node
+ * @property {Edge} edge
+ */
+
 export default class Node {
 
     /**
@@ -15,13 +21,18 @@ export default class Node {
         this.latitude = latitude;
         this.longitude = longitude;
         this.visited = false;
-
     }
 
+    /**
+     * @returns {Number} f heuristics
+     */
     get f() {
         return this.g + this.h;
     }
 
+    /**
+     * @returns {NodeNeighbor[]} list of neighbors 
+     */
     get neighbors() {
         return this.edges.map(edge => ({ edge, node: edge.getOtherNode(this)}));
     }
@@ -36,6 +47,9 @@ export default class Node {
         node.edges.push(edge);
     }
 
+    /**
+     * Reset node to default state
+     */
     reset() {
         this.visited = false;
         this.g = 0; // TODO : better name

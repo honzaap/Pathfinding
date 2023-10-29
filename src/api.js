@@ -2,7 +2,7 @@ const highWayExclude = ["footway", "street_lamp", "steps", "pedestrian"];
 
 /**
  * 
- * @param {Array} array with 2 objects that have a latitude and longitude property 
+ * @param {Array} boundingBox array with 2 objects that have a latitude and longitude property 
  * @returns {Promise<Response>}
  */
 export function fetchOverpassData(boundingBox) {

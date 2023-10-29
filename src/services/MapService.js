@@ -41,6 +41,12 @@ export async function getNearestNode(latitude, longitude) {
     return result;
 }
 
+/**
+ * Fetches map data and converts them to graph structure
+ * @param {Array} boundingBox array with 2 objects that have a latitude and longitude property 
+ * @param {Number} startNodeId 
+ * @returns 
+ */
 export async function getMapGraph(boundingBox, startNodeId) {
     const response = await fetchOverpassData(boundingBox, false);
     const data = await response.json();
