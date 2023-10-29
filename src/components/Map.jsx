@@ -3,6 +3,7 @@ import { Map as MapGL } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { PolygonLayer, ScatterplotLayer } from "@deck.gl/layers";
+import { FlyToInterpolator } from "deck.gl";
 import { TripsLayer } from "@deck.gl/geo-layers";
 import { createGeoJSONCircle } from "../helpers";
 import { useEffect, useRef, useState } from "react";
@@ -15,20 +16,20 @@ import useSmoothStateChange from "../hooks/useSmoothStateChange";
 function Map() {
     const [startNode, setStartNode] = useState(null);
     const [endNode, setEndNode] = useState(null);
-    const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-    const [selectionRadius, setSelectionRadius] = useState([]); // TODO : animation group
-    const [tripsData, setTripsData] = useState([]); // TODO : animation group
-    const [started, setStarted] = useState(); // TODO : animation group
-    const [time, setTime] = useState(0); // TODO : animation group
-    const [animationEnded, setAnimationEnded] = useState(false); // TODO : animation group
-    const [playbackOn, setPlaybackOn] = useState(false); // TODO : animation group
-    const [playbackDirection, setPlaybackDirection] = useState(1); // TODO : animation group
-    const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false); // TODO : animation group
-    const [cinematic, setCinematic] = useState(false); // TODO : animation group
-    const [placeEnd, setPlaceEnd] = useState(false); // TODO : animation group
+    const [selectionRadius, setSelectionRadius] = useState([]);
+    const [tripsData, setTripsData] = useState([]);
+    const [started, setStarted] = useState();
+    const [time, setTime] = useState(0);
+    const [animationEnded, setAnimationEnded] = useState(false);
+    const [playbackOn, setPlaybackOn] = useState(false);
+    const [playbackDirection, setPlaybackDirection] = useState(1);
+    const [fadeRadiusReverse, setFadeRadiusReverse] = useState(false);
+    const [cinematic, setCinematic] = useState(false);
+    const [placeEnd, setPlaceEnd] = useState(false);
     const [loading, setLoading] = useState(false);
     const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 1 });
     const [colors, setColors] = useState(INITIAL_COLORS);
+    const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
     const ui = useRef();
     const fadeRadius = useRef();
     const requestRef = useRef();
@@ -205,7 +206,7 @@ function Map() {
     }
 
     function changeLocation(location) {
-        setViewState({...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13});
+        setViewState({ ...viewState, longitude: location.longitude, latitude: location.latitude, zoom: 13,transitionDuration: 1, transitionInterpolator: new FlyToInterpolator()});
     }
 
     function changeSettings(newSettings) {
@@ -239,9 +240,8 @@ function Map() {
         <>
             <div onContextMenu={(e) => { e.preventDefault(); }}>
                 <DeckGL
-                    viewState={viewState}
+                    initialViewState={viewState}
                     controller={{ doubleClickZoom: false, keyboard: false }}
-                    onViewStateChange={e => setViewState(e.viewState)}
                     onClick={mapClick}
                 >
                     <PolygonLayer 
