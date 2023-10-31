@@ -227,6 +227,10 @@ function Map() {
     }, [started, time, animationEnded, playbackOn]);
 
     useEffect(() => {
+        navigator.geolocation.getCurrentPosition(res => {
+            changeLocation(res.coords);
+        });
+
         const settings = localStorage.getItem("path_settings");
         if(!settings) return;
         const items = JSON.parse(settings);
