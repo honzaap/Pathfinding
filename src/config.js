@@ -2,8 +2,6 @@ export const MAPBOX_ACCESS_TOKEN = "sk.eyJ1IjoiaG9uemFhcCIsImEiOiJjbG5vdXRtNm8wa
 
 export const MAP_STYLE = "/map_style.json";
 
-export const STEPS_PER_FRAME = 3;
-
 export const INITIAL_VIEW_STATE = {
     longitude: 15.058855041919362,
     latitude: 50.769436485473946,

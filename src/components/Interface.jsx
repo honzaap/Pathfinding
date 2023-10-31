@@ -338,7 +338,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         <Typography id="speed-slider" >
                             Animation speed
                         </Typography>
-                        <Slider min={0.2} max={3.0} step={0.1} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
+                        <Slider min={1} max={20} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
                     </div>
 
                     <div className="styles-container">

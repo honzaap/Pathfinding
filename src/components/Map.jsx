@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
 import Interface from "./Interface";
-import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE, STEPS_PER_FRAME } from "../config";
+import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
 import useSmoothStateChange from "../hooks/useSmoothStateChange";
 
 function Map() {
@@ -27,7 +27,7 @@ function Map() {
     const [cinematic, setCinematic] = useState(false);
     const [placeEnd, setPlaceEnd] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 1 });
+    const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 5 });
     const [colors, setColors] = useState(INITIAL_COLORS);
     const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
     const ui = useRef();
@@ -164,7 +164,7 @@ function Map() {
         // Animation progress
         if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
-            setTime(prevTime => (prevTime + deltaTime * settings.speed * 2 * playbackDirection));
+            setTime(prevTime => (prevTime + deltaTime * 2 * playbackDirection));
         }
 
         // Playback progress
@@ -173,13 +173,13 @@ function Map() {
             if(time >= timer.current && playbackDirection !== -1) {
                 setPlaybackOn(false);
             }
-            setTime(prevTime => (Math.max(Math.min(prevTime + deltaTime * settings.speed * 2 * playbackDirection, timer.current), 0)));
+            setTime(prevTime => (Math.max(Math.min(prevTime + deltaTime * 2 * playbackDirection, timer.current), 0)));
         }
     }
 
     // Animation callback
     function animate(newTime) {
-        for(let i = 0; i < STEPS_PER_FRAME; i++) {
+        for(let i = 0; i < settings.speed; i++) {
             animateStep(newTime);
         }
 
