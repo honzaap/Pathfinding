@@ -177,7 +177,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
 
             <div className="mobile-controls">
                 <Button onClick={() => {setPlaceEnd(!placeEnd);}} style={{ color: "#fff", backgroundColor: "#404156", paddingInline: 30, paddingBlock: 7 }} variant="contained">
-                    {placeEnd ? "Place start node" : "Place end node"}
+                    {placeEnd ? "placing end node" : "placing start node"}
                 </Button>
             </div>
 
@@ -338,7 +338,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         <Typography id="speed-slider" >
                             Animation speed
                         </Typography>
-                        <Slider min={1} max={20} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
+                        <Slider min={1} max={30} value={settings.speed} onChange={e => { setSettings({...settings, speed: Number(e.target.value)}); }} className="slider" aria-labelledby="speed-slider" style={{ marginBottom: 1 }} />
                     </div>
 
                     <div className="styles-container">

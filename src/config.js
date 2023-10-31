@@ -1,5 +1,3 @@
-export const MAPBOX_ACCESS_TOKEN = "sk.eyJ1IjoiaG9uemFhcCIsImEiOiJjbG5vdXRtNm8wamNuMnJxaTl5d2dwaWZpIn0.nRWrLVhRxw7hZpE67i4Xuw";
-
 export const MAP_STYLE = "/map_style.json";
 
 export const INITIAL_VIEW_STATE = {

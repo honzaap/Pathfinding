@@ -2,8 +2,12 @@ body {
     background-color: #111;
     color: #fff;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     overflow: hidden;
+}
+
+canvas {
+    min-height: 100vh;
 }
 
 #root {
@@ -337,4 +341,8 @@ body {
     @media (hover: none) {
         display: flex;
     }
+}
+
+.maplibregl-control-container {
+    display: none;
 }

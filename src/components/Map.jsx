@@ -1,7 +1,6 @@
 import DeckGL from "@deck.gl/react";
 import { Map as MapGL } from "react-map-gl";
 import maplibregl from "maplibre-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { PolygonLayer, ScatterplotLayer } from "@deck.gl/layers";
 import { FlyToInterpolator } from "deck.gl";
 import { TripsLayer } from "@deck.gl/geo-layers";
@@ -10,7 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { getBoundingBoxFromPolygon, getMapGraph, getNearestNode } from "../services/MapService";
 import PathfindingState from "../models/PathfindingState";
 import Interface from "./Interface";
-import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAPBOX_ACCESS_TOKEN, MAP_STYLE } from "../config";
+import { INITIAL_COLORS, INITIAL_VIEW_STATE, MAP_STYLE } from "../config";
 import useSmoothStateChange from "../hooks/useSmoothStateChange";
 
 function Map() {
@@ -295,7 +294,6 @@ function Map() {
                         getLineColor={d => d.lineColor}
                     />
                     <MapGL 
-                        mapboxAccessToken={MAPBOX_ACCESS_TOKEN} 
                         reuseMaps mapLib={maplibregl} 
                         mapStyle={MAP_STYLE} 
                         doubleClickZoom={false}
