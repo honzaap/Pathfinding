@@ -26,8 +26,8 @@ export default class Node {
     /**
      * @returns {Number} f heuristics
      */
-    get f() {
-        return this.g + this.h;
+    get totalDistance() {
+        return this.distanceFromStart + this.distanceToEnd;
     }
 
     /**
@@ -52,8 +52,8 @@ export default class Node {
      */
     reset() {
         this.visited = false;
-        this.g = 0; // TODO : better name
-        this.h = 0; // TODO : better name
+        this.distanceFromStart = 0;
+        this.distanceToEnd = 0;
         this.parent = null;
         this.referer = null;
 

@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "re
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
-const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, changeAlgorithm, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
     const [sidebar, setSidebar] = useState(false);
     const [snack, setSnack] = useState({
         open: false,
@@ -264,7 +264,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         <Select
                             labelId="algo-select"
                             value={settings.algorithm}
-                            onChange={e => {setSettings({...settings, algorithm: e.target.value});}}
+                            onChange={e => {changeAlgorithm(e.target.value);}}
                             required
                             style={{ backgroundColor: "#404156", color: "#fff", width: "100%", paddingLeft: 1 }}
                             inputProps={{MenuProps: {MenuListProps: {sx: {backgroundColor: "#404156"}}}}}
@@ -272,7 +272,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                             disabled={!animationEnded && started}
                         >
                             <MenuItem value={"astar"}>A* algorithm</MenuItem>
-                            <MenuItem value={"placeholder1"}>Placeholder 1</MenuItem>
+                            <MenuItem value={"greedy"}>Greedy algorithm</MenuItem>
                             <MenuItem value={"placeholder2"}>Placeholder 2</MenuItem>
                             <MenuItem value={"placeholder3"}>Placeholder 3</MenuItem>
                         </Select>

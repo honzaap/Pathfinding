@@ -49,7 +49,7 @@ export function rgbToArray(color) {
 export function arrayToRgb(array) {
     if(!array) return "rgb(0, 0, 0)";
     const rgb = [...array];
-    if(rgb[3]) rgb[3] *= 255;
+    if(rgb[3]) rgb[3] /= 255;
     const result = `rgb${array.length >= 4 ? "a" : ""}(${rgb.join(", ")})`;
     return result;
 }

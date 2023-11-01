@@ -110,7 +110,7 @@ function Map() {
         setFadeRadiusReverse(true);
         setTimeout(() => {
             clearPath();
-            state.current.start();
+            state.current.start(settings.algorithm);
             setStarted(true);
         }, 400);
     }
@@ -220,6 +220,11 @@ function Map() {
         localStorage.setItem("path_settings", JSON.stringify(items));
     }
 
+    function changeAlgorithm(algorithm) {
+        clearPath();
+        changeSettings({ ...settings, algorithm });
+    }
+
     useEffect(() => {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
@@ -319,6 +324,7 @@ function Map() {
                 maxTime={timer.current}
                 settings={settings}
                 setSettings={changeSettings}
+                changeAlgorithm={changeAlgorithm}
                 colors={colors}
                 setColors={changeColors}
                 loading={loading}
