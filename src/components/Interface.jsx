@@ -273,8 +273,8 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         >
                             <MenuItem value={"astar"}>A* algorithm</MenuItem>
                             <MenuItem value={"greedy"}>Greedy algorithm</MenuItem>
-                            <MenuItem value={"placeholder2"}>Placeholder 2</MenuItem>
-                            <MenuItem value={"placeholder3"}>Placeholder 3</MenuItem>
+                            <MenuItem value={"dijkstra"}>Dijkstra&apos;s algorithm</MenuItem>
+                            <MenuItem value={"bidirectional"}>Bidirectional Search algorithm</MenuItem>
                         </Select>
                     </FormControl>
 

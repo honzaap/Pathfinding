@@ -1,4 +1,6 @@
 import AStar from "./algorithms/AStar";
+import BidirectionalSearch from "./algorithms/BidirectionalSearch";
+import Dijkstra from "./algorithms/Dijkstra";
 import Greedy from "./algorithms/Greedy";
 import PathfindingAlgorithm from "./algorithms/PathfindingAlgorithm";
 
@@ -56,6 +58,12 @@ export default class PathfindingState {
                 break;
             case "greedy":
                 this.algorithm = new Greedy();
+                break;
+            case "dijkstra":
+                this.algorithm = new Dijkstra();
+                break;
+            case "bidirectional":
+                this.algorithm = new BidirectionalSearch();
                 break;
             default:
                 this.algorithm = new AStar();
