@@ -9,7 +9,6 @@ class BidirectionalSearch extends PathfindingAlgorithm {
         this.openSetEnd.add(this.endNode);
         this.closedSetStart = new Set();
         this.closedSetEnd = new Set();
-        this.intersectingNode = null;
     }
 
     start(startNode, endNode) {
@@ -20,7 +19,6 @@ class BidirectionalSearch extends PathfindingAlgorithm {
         this.openSetEnd.add(endNode);
         this.closedSetStart = new Set();
         this.closedSetEnd = new Set();
-        this.intersectingNode = null;
     }
 
     nextStep() {
@@ -34,41 +32,62 @@ class BidirectionalSearch extends PathfindingAlgorithm {
         if (currentStart) {
             currentStart.visited = true;
             this.closedSetStart.add(currentStart);
+            const refEdge = currentStart.edges.find(e => e.getOtherNode(currentStart) === currentStart.referer);
+            if(refEdge) refEdge.visited = true;
+
             // Intersected
             if (this.openSetEnd.has(currentStart)) {
-                this.intersectingNode = currentStart;
                 this.finished = true;
+                console.log("found from start");
+                return [currentStart];
             }
             updatedNodes.push(currentStart);
-            this.updateNeighbors(currentStart, this.openSetStart, this.closedSetStart);
+            updatedNodes.push(...this.updateNeighbors(currentStart, this.openSetStart, this.closedSetStart));
         }
 
         const currentEnd = this.getNextFromOpenSet(this.openSetEnd, this.closedSetEnd);
         if (currentEnd) {
             currentEnd.visited = true;
             this.closedSetEnd.add(currentEnd);
+            const refEdge = currentEnd.edges.find(e => e.getOtherNode(currentEnd) === currentEnd.referer);
+            if(refEdge) refEdge.visited = true;
+
             // Intersected
             if (this.openSetStart.has(currentEnd)) {
-                this.intersectingNode = currentEnd;
+                console.log("found from end");
                 this.finished = true;
+                return [currentEnd];
             }
             updatedNodes.push(currentEnd);
-            this.updateNeighbors(currentEnd, this.openSetEnd, this.closedSetEnd);
+            updatedNodes.push(...this.updateNeighbors(currentEnd, this.openSetEnd, this.closedSetEnd));
         }
 
         return updatedNodes;
     }
 
     updateNeighbors(node, openSet, closedSet) {
+        const updatedNodes = [];
+
         for (const n of node.neighbors) {
             const neighbor = n.node;
+            const edge = n.edge;
+
+            // Fill edges that are not marked on the map
+            if(neighbor.visited && !edge.visited) {
+                edge.visited = true;
+                neighbor.referer = node;
+                updatedNodes.push(neighbor);
+            }
 
             if (!closedSet.has(neighbor) && !neighbor.visited) {
                 openSet.add(neighbor);
+                neighbor.prevParent = neighbor.parent;
                 neighbor.parent = node;
                 neighbor.referer = node;
             }
         }
+
+        return updatedNodes;
     }
 
     getNextFromOpenSet(openSet, closedSet) {

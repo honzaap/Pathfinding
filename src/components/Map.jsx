@@ -37,6 +37,7 @@ function Map() {
     const waypoints = useRef([]);
     const state = useRef(new PathfindingState());
     const traceNode = useRef(null);
+    const traceNode2 = useRef(null);
     const selectionRadiusOpacity = useSmoothStateChange(0, 0, 1, 400, fadeRadius.current, fadeRadiusReverse);
 
     async function mapClick(e, info) {
@@ -142,22 +143,41 @@ function Map() {
         timer.current = 0;
         previousTimeRef.current = null;
         traceNode.current = null;
+        traceNode2.current = null;
         setAnimationEnded(false);
     }
 
     // Progress animation by one step
     function animateStep(newTime) {
-        for(const updatedNode of state.current.nextStep()) {
+        const updatedNodes = state.current.nextStep();
+        for(const updatedNode of updatedNodes) {
             updateWaypoints(updatedNode, updatedNode.referer);
         }
 
         // Found end but waiting for animation to end
         if(state.current.finished && !animationEnded) {
-            if(!traceNode.current) traceNode.current = state.current.endNode;
-            const parentNode = traceNode.current.parent;
-            updateWaypoints(parentNode, traceNode.current, "route");
-            traceNode.current = parentNode ?? traceNode.current;
-            setAnimationEnded(time >= timer.current && parentNode == null);
+            if(settings.algorithm === "bidirectional") {
+                if(!traceNode.current) traceNode.current = updatedNodes[0];
+                const parentNode = traceNode.current.parent;
+                updateWaypoints(parentNode, traceNode.current, "route");
+                traceNode.current = parentNode ?? traceNode.current;
+
+                if(!traceNode2.current) {
+                    traceNode2.current = updatedNodes[0];
+                    traceNode2.current.parent = traceNode2.current.prevParent;
+                }
+                const parentNode2 = traceNode2.current.parent;
+                updateWaypoints(parentNode2, traceNode2.current, "route");
+                traceNode2.current = parentNode2 ?? traceNode2.current;
+                setAnimationEnded(time >= timer.current && parentNode == null && parentNode2 == null);
+            }
+            else {
+                if(!traceNode.current) traceNode.current = state.current.endNode;
+                const parentNode = traceNode.current.parent;
+                updateWaypoints(parentNode, traceNode.current, "route");
+                traceNode.current = parentNode ?? traceNode.current;
+                setAnimationEnded(time >= timer.current && parentNode == null);
+            }
         }
 
         // Animation progress
