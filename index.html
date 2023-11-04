@@ -1,74 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
-    <title>Pathfinding Visualizer</title>
-    <meta name="description" content="Pathfinding algorithms visualizer. Visualize algorithms like A*, Djikstra's and more!">
-    <meta name="keywords" content="pathfinding, visualization, a*, djikstra's algorithm, prim's algorithm">
-    <link rel="stylesheet" href="typo.css">
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="grid.css">
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
-    <link rel="icon" href="neural.svg">
-</head>
-<body>
-    <div class="page">
-        <header>
-            <nav class="navbar" id="navbar">
-                <div class="navbar-item">
-                    <div class="custom-select">
-                        <select id="algo-select">
-                            <option value="AStar">A* Algorithm</option>
-                            <option value="Dijkstra">Dijkstra's Algorithm</option>
-                            <option value="BFS">Breadth First Search</option>
-                            <option value="DFS">Depth First Search</option>
-                            <option value="Greedy">Greedy Algorithm</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="navbar-item">
-                    <div class="custom-select">
-                        <select id="maze-algo-select">
-                            <option value="DFS">Random DFS Maze</option>
-                            <option value="Prim">Prim's Algorithm</option>
-                            <option value="Random">Random Maze</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="navbar-item">
-                    <button class="general-button start-button" onclick="Run()">Visualize</button>
-                </div>
-                <div class="navbar-item">
-                    <div class="speed-container slidecontainer">
-                        <span class="range-caption">Speed</span>
-                        <input type="range" class="slider" id="range-speed" min="0" max="200" value="200">
-                    </div>
-                </div>
-                <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ResetPath();">Reset Path</button>
-                </div>
-
-                <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ClearWalls();">Remove Walls</button>
-                </div>
-                <div class="navbar-item">
-                    <button class="general-button options-button" onclick="ClearGrid();">Clear Board</button>
-                </div>
-            </nav>
-        </header>
-        <div class="main-grid-container">
-            <div class="grid-container">
-                <div class="grid" id="grid">
-                
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="main.js" async></script>
-    <script src="select.js" async></script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Pathfinding</title>
+        <meta name="description" content="Pathfinding visualizer on a real map. Anywhere in the world.">
+        <meta name="keywords" content="pathfinding, visualizer, visualization, map pathfinding, a star visualizer, dijkstra visualizer, a star map visualizer">
+        <meta name="robots" content="all, follow">
+        <meta name="author" content="honzaap">
+        <meta name="google-site-verification" content="u_5pc2hJxXglz_oWB2V_1gh46BaK3aGHzp2Fe3bkTBY" />
+        <!-- Favicon -->
+        <link rel="icon" href="./favicon.ico">
+        <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+        <link rel="manifest" href="./site.webmanifest">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://honzaap.github.io/Pathfinding"/>
+        <meta property="og:title" content="Map pathfinding visualizer"/>
+        <meta property="og:description" content="Pathfinding visualizer on a real map. Anywhere in the world."/>
+        <meta property="og:image" content="https://honzaap.github.io/Pathfinding/metaimg.png"/>
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://honzaap.github.io/Pathfinding"/>
+        <meta property="twitter:title" content="Map pathfinding visualizer"/>
+        <meta property="twitter:description" content="Pathfinding visualizer on a real map. Anywhere in the world."/>
+        <meta property="twitter:image" content="https://honzaap.github.io/Pathfinding/metaimg.png"/>
+      <script type="module" crossorigin src="./assets/index.67b55ab1.js"></script>
+      <link rel="stylesheet" href="./assets/index.9dafa27b.css">
+    </head>
+    <body>
+        <div id="root"></div>
+        
+    </body>
 </html>
