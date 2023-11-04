@@ -40,7 +40,7 @@ function Map() {
     const traceNode2 = useRef(null);
     const selectionRadiusOpacity = useSmoothStateChange(0, 0, 1, 400, fadeRadius.current, fadeRadiusReverse);
 
-    async function mapClick(e, info) {
+    async function mapClick(e, info, radius = null) {
         if(started && !animationEnded) return;
 
         setFadeRadiusReverse(false);
@@ -101,7 +101,7 @@ function Map() {
 
         setStartNode(node);
         setEndNode(null);
-        const circle = createGeoJSONCircle([node.lon, node.lat], settings.radius);
+        const circle = createGeoJSONCircle([node.lon, node.lat], radius ?? settings.radius);
         setSelectionRadius([{ contour: circle}]);
         
         // Fetch nodes inside the radius
@@ -253,6 +253,13 @@ function Map() {
         changeSettings({ ...settings, algorithm });
     }
 
+    function changeRadius(radius) {
+        changeSettings({...settings, radius});
+        if(startNode) {
+            mapClick({coordinate: [startNode.lon, startNode.lat]}, {}, radius);
+        }
+    }
+
     useEffect(() => {
         if(!started) return;
         requestRef.current = requestAnimationFrame(animate);
@@ -360,6 +367,7 @@ function Map() {
                 setCinematic={setCinematic}
                 placeEnd={placeEnd}
                 setPlaceEnd={setPlaceEnd}
+                changeRadius={changeRadius}
             />
         </>
     );

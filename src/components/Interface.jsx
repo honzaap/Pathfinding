@@ -6,7 +6,7 @@ import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "re
 import { INITIAL_COLORS, LOCATIONS } from "../config";
 import { arrayToRgb, rgbToArray } from "../helpers";
 
-const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, changeAlgorithm, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
+const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, time, maxTime, settings, colors, loading, timeChanged, cinematic, placeEnd, changeRadius, changeAlgorithm, setPlaceEnd, setCinematic, setSettings, setColors, startPathfinding, toggleAnimation, clearPath, changeLocation }, ref) => {
     const [sidebar, setSidebar] = useState(false);
     const [snack, setSnack] = useState({
         open: false,
@@ -320,7 +320,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
                         <Typography id="area-slider" >
                             Area radius: {settings.radius}km ({(settings.radius / 1.609).toFixed(1)}mi)
                         </Typography>
-                        <Slider min={2} max={20} step={1} value={settings.radius} onChange={e => { setSettings({...settings, radius: Number(e.target.value)}); }} className="slider" aria-labelledby="area-slider" style={{ marginBottom: 1 }} 
+                        <Slider disabled={started && !animationEnded} min={2} max={20} step={1} value={settings.radius} onChangeCommited={() => { changeRadius(settings.radius); }} onChange={e => { setSettings({...settings, radius: Number(e.target.value)}); }} className="slider" aria-labelledby="area-slider" style={{ marginBottom: 1 }} 
                             marks={[
                                 {
                                     value: 2,
