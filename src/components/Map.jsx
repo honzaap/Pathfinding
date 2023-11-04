@@ -167,7 +167,7 @@ function Map() {
             if(settings.algorithm === "bidirectional") {
                 if(!traceNode.current) traceNode.current = updatedNodes[0];
                 const parentNode = traceNode.current.parent;
-                updateWaypoints(parentNode, traceNode.current, "route");
+                updateWaypoints(parentNode, traceNode.current, "route", Math.max(Math.log2(settings.speed), 1));
                 traceNode.current = parentNode ?? traceNode.current;
 
                 if(!traceNode2.current) {
@@ -175,14 +175,14 @@ function Map() {
                     traceNode2.current.parent = traceNode2.current.prevParent;
                 }
                 const parentNode2 = traceNode2.current.parent;
-                updateWaypoints(parentNode2, traceNode2.current, "route");
+                updateWaypoints(parentNode2, traceNode2.current, "route", Math.max(Math.log2(settings.speed), 1));
                 traceNode2.current = parentNode2 ?? traceNode2.current;
                 setAnimationEnded(time >= timer.current && parentNode == null && parentNode2 == null);
             }
             else {
                 if(!traceNode.current) traceNode.current = state.current.endNode;
                 const parentNode = traceNode.current.parent;
-                updateWaypoints(parentNode, traceNode.current, "route");
+                updateWaypoints(parentNode, traceNode.current, "route", Math.max(Math.log2(settings.speed), 1));
                 traceNode.current = parentNode ?? traceNode.current;
                 setAnimationEnded(time >= timer.current && parentNode == null);
             }
@@ -191,7 +191,7 @@ function Map() {
         // Animation progress
         if (previousTimeRef.current != null && !animationEnded) {
             const deltaTime = newTime - previousTimeRef.current;
-            setTime(prevTime => (prevTime + deltaTime * 2 * playbackDirection));
+            setTime(prevTime => (prevTime + deltaTime * playbackDirection));
         }
 
         // Playback progress
@@ -215,10 +215,10 @@ function Map() {
     }
 
     // Add new node to the waypoitns property and increment timer
-    function updateWaypoints(node, refererNode, color = "path") {
+    function updateWaypoints(node, refererNode, color = "path", timeMultiplier = 1) {
         if(!node || !refererNode) return;
         const distance = Math.hypot(node.longitude - refererNode.longitude, node.latitude - refererNode.latitude);
-        const timeAdd = distance * 50000;
+        const timeAdd = distance * 50000 * timeMultiplier;
 
         waypoints.current = [...waypoints.current,
             { 
