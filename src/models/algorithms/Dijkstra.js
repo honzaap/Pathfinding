@@ -4,12 +4,11 @@ class Dijkstra extends PathfindingAlgorithm {
     constructor() {
         super();
         this.openList = [];
-        this.closedList = [];
     }
 
     start(startNode, endNode) {
         super.start(startNode, endNode);
-        this.openList.push(startNode);
+        this.openList = [startNode];
     }
 
     nextStep() {
@@ -20,7 +19,6 @@ class Dijkstra extends PathfindingAlgorithm {
 
         const updatedNodes = [];
         const currentNode = this.openList.shift();
-        this.closedList.push(currentNode);
         currentNode.visited = true;
         const refEdge = currentNode.edges.find(e => e.getOtherNode(currentNode) === currentNode.referer);
         if(refEdge) refEdge.visited = true;
@@ -43,7 +41,7 @@ class Dijkstra extends PathfindingAlgorithm {
                 updatedNodes.push(neighbor);
             }
 
-            if (this.closedList.includes(neighbor) || neighbor.visited) continue;
+            if (neighbor.visited) continue;
 
             const neighborCurrentCost = currentNode.distanceFromStart + edge.weight;
 

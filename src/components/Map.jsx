@@ -64,6 +64,13 @@ function Map() {
             }, 300);
             
             const node = await getNearestNode(e.coordinate[1], e.coordinate[0]);
+            if(!node) {
+                ui.current.showSnack("No path was found in the vicinity, please try another location.");
+                clearTimeout(loadingHandle);
+                setLoading(false);
+                return;
+            }
+
             const realEndNode = state.current.getNode(node.id);
             setEndNode(node);
             
@@ -156,6 +163,7 @@ function Map() {
 
         // Found end but waiting for animation to end
         if(state.current.finished && !animationEnded) {
+            // Render route differently for bidirectional
             if(settings.algorithm === "bidirectional") {
                 if(!traceNode.current) traceNode.current = updatedNodes[0];
                 const parentNode = traceNode.current.parent;
@@ -216,7 +224,7 @@ function Map() {
             { 
                 path: [[refererNode.longitude, refererNode.latitude], [node.longitude, node.latitude]],
                 timestamps: [timer.current, timer.current + timeAdd],
-                color, timestamp: timer.current + timeAdd
+                color,// timestamp: timer.current + timeAdd
             }
         ];
 

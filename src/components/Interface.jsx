@@ -318,7 +318,7 @@ const Interface = forwardRef(({ canStart, started, animationEnded, playbackOn, t
 
                     <div className="side slider-container">
                         <Typography id="area-slider" >
-                            Area radius: {settings.radius}km ({(settings.radius * 1.609).toFixed(1)}mi)
+                            Area radius: {settings.radius}km ({(settings.radius / 1.609).toFixed(1)}mi)
                         </Typography>
                         <Slider min={2} max={20} step={1} value={settings.radius} onChange={e => { setSettings({...settings, radius: Number(e.target.value)}); }} className="slider" aria-labelledby="area-slider" style={{ marginBottom: 1 }} 
                             marks={[
