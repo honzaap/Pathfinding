@@ -14,6 +14,10 @@
 
 
 
+https://github.com/honzaap/Pathfinding/assets/58147774/1a5e5c50-5e13-4738-b67a-2015631906ee
+
+
+
 ## Installation
 1. Clone repository to your local machine
 2. Open terminal and `cd` into repository folder
