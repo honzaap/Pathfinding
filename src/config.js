@@ -1,4 +1,4 @@
-export const MAP_STYLE = "/map_style.json";
+export const MAP_STYLE = "./map_style.json";
 
 export const INITIAL_VIEW_STATE = {
     longitude: -0.127,
