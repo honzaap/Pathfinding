@@ -26,7 +26,7 @@ function Map() {
     const [cinematic, setCinematic] = useState(false);
     const [placeEnd, setPlaceEnd] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [settings, setSettings] = useState({ algorithm: "astar", radius: 2, speed: 5 });
+    const [settings, setSettings] = useState({ algorithm: "astar", radius: 4, speed: 5 });
     const [colors, setColors] = useState(INITIAL_COLORS);
     const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
     const ui = useRef();
