@@ -123,9 +123,11 @@ canvas {
         bottom: 20px;
     }
 
-    @media (hover: none) {
-        .btn-cinematic {
-            display: none;
+    @media (hover: none)   {
+        @media not all and (pointer: fine) {
+            .btn-cinematic {
+                display: none;
+            }
         }
     }
 }
@@ -339,7 +341,9 @@ canvas {
     }
 
     @media (hover: none) {
-        display: flex;
+        @media not all and (pointer: fine) {
+            display: flex;
+        }
     }
 }
 
