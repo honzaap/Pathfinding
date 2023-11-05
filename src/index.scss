@@ -158,7 +158,7 @@ canvas {
 .sidebar-container {
     display: flex;
     flex-direction: column;
-    width: 290px;
+    min-width: 290px;
     padding: 25px;
     background: linear-gradient(180deg, #2A2B37 0%, #1F2029 100%);
     box-shadow: 7px 0px 20px 0px rgba(0, 0, 0, 0.25);
