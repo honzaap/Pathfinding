@@ -350,3 +350,18 @@ canvas {
 .maplibregl-control-container {
     display: none;
 }
+.attrib-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    color: #fff;
+    font-size: 12px;
+
+    .maplibregl-ctrl-attrib-button {
+        display: none;
+    }
+
+    a {
+        color: #fff;
+    }
+}

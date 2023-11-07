@@ -369,6 +369,7 @@ function Map() {
                 setPlaceEnd={setPlaceEnd}
                 changeRadius={changeRadius}
             />
+            <div className="attrib-container"><summary className="maplibregl-ctrl-attrib-button" title="Toggle attribution" aria-label="Toggle attribution"></summary><div className="maplibregl-ctrl-attrib-inner">© <a href="https://carto.com/about-carto/" target="_blank" rel="noopener">CARTO</a>, © <a href="http://www.openstreetmap.org/about/" target="_blank">OpenStreetMap</a> contributors</div></div>
         </>
     );
 }
